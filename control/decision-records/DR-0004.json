@@ -1,0 +1,16 @@
+{
+  "id": "DR-0004",
+  "kind": "decision_record",
+  "title": "The v0.1 control-plane contract is flat JSON under a control-plane root",
+  "status": "accepted",
+  "context": "The reference CLI, schemas, examples, and dogfood control objects already assume one JSON file per object, but the consultation draft still shows a mixed markdown and YAML layout with per-object directories and event logs. Freezing the repo contract requires one portable default that tools can implement consistently.",
+  "decision": "For v0.1, CCP uses one JSON file per core object under a control-plane root. The control plane may be a standalone repository or a repo-local control/ subdirectory. Event-log files, markdown or YAML object formats, and directory-per-object layouts are deferred beyond the portable v0.1 baseline.",
+  "alternatives_considered": [
+    "Keep the mixed markdown and YAML layout from the consultation draft as the default",
+    "Make event logs and directory-per-object layouts mandatory in v0.1"
+  ],
+  "consequences": [
+    "The CLI and schemas can enforce one small boring default representation",
+    "More expressive layouts remain possible later as optional extensions instead of being part of the v0.1 interoperability baseline"
+  ]
+}

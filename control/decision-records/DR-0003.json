@@ -1,0 +1,16 @@
+{
+  "id": "DR-0003",
+  "kind": "decision_record",
+  "title": "Status transitions are defined per CCP object kind",
+  "status": "accepted",
+  "context": "The schemas already use different status enums for Change Requests, Decision Records, Execution Plans, and Evidence Packs, but the draft language still reads as if one lifecycle applies everywhere. The reference CLI also uses a shared transition map keyed only by current status, which prevents non-Change-Request objects from moving through their own lifecycles.",
+  "decision": "For v0.1, CCP defines a separate state machine for each core object kind. Change Requests move through draft, review, planning, execution, verification, and closeout. Decision Records, Execution Plans, and Evidence Packs each use smaller supporting lifecycles. Execution Plans may reopen from done to executing when the approved contract has not changed and more implementation work is required.",
+  "alternatives_considered": [
+    "Use one shared lifecycle for all CCP objects",
+    "Let each implementation infer transitions from status names without a normative matrix"
+  ],
+  "consequences": [
+    "The reference CLI and future implementations must validate transitions by object kind",
+    "The Change Request lifecycle remains distinct from decision, planning, and evidence workflows"
+  ]
+}

@@ -12,6 +12,5 @@
   "consequences": [
     "The protocol becomes testable and locally usable",
     "Foundry can remain a distinct product implementation"
-  ],
-  "supersedes": null
+  ]
 }

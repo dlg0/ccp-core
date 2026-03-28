@@ -56,10 +56,7 @@
       "minItems": 1
     },
     "supersedes": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "pattern": "^DR-[0-9]{4}$"
     }
   }

@@ -59,16 +59,10 @@
       ]
     },
     "sponsor": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "owner": {
-      "type": [
-        "string",
-        "null"
-      ]
+      "type": "string"
     },
     "problem_statement": {
       "type": "string",

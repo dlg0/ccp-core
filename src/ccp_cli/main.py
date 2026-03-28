@@ -12,20 +12,34 @@ from rich.table import Table
 app = typer.Typer(help="Reference CLI for CCP")
 console = Console()
 
-BASE_TRANSITIONS = {
-    "draft": {"discussing"},
-    "discussing": {"approved"},
-    "approved": {"planned", "executing"},
-    "planned": {"executing"},
-    "executing": {"verified"},
-    "verified": {"closed"},
-    "closed": set(),
-    "accepted": {"superseded"},
-    "superseded": set(),
-    "submitted": {"accepted", "rejected"},
-    "rejected": {"draft", "submitted"},
-    "blocked": {"executing", "done"},
-    "done": set(),
+TRANSITIONS_BY_KIND = {
+    "change_request": {
+        "draft": {"discussing"},
+        "discussing": {"approved"},
+        "approved": {"planned"},
+        "planned": {"executing"},
+        "executing": {"verified"},
+        "verified": {"closed", "executing", "discussing"},
+        "closed": set(),
+    },
+    "decision_record": {
+        "draft": {"accepted"},
+        "accepted": {"superseded"},
+        "superseded": set(),
+    },
+    "execution_plan": {
+        "draft": {"planned"},
+        "planned": {"executing"},
+        "executing": {"blocked", "done"},
+        "blocked": {"executing"},
+        "done": {"executing"},
+    },
+    "evidence_pack": {
+        "draft": {"submitted"},
+        "submitted": {"accepted", "rejected"},
+        "rejected": {"draft"},
+        "accepted": set(),
+    },
 }
 
 ROOT_DIRS = [
@@ -33,7 +47,6 @@ ROOT_DIRS = [
     "control/decision-records",
     "control/execution-plans",
     "control/evidence-packs",
-    "control/events",
 ]
 
 SCHEMA_MAP = {
@@ -66,7 +79,6 @@ TEMPLATES = {
         "decision": "",
         "alternatives_considered": [""],
         "consequences": [""],
-        "supersedes": None,
     },
     "execution_plan": {
         "id": "EP-0001",
@@ -202,14 +214,16 @@ def transition(
     new_status: str = typer.Argument(..., help="Target status"),
 ):
     data = load_json(object_path)
+    kind = data.get("kind")
     current = data.get("status")
-    allowed = BASE_TRANSITIONS.get(current, set())
+    allowed = TRANSITIONS_BY_KIND.get(kind, {}).get(current, set())
     if new_status not in allowed:
-        console.print(f"[red]Invalid transition[/red]: {current} -> {new_status}")
+        console.print(f"[red]Invalid transition[/red] for {kind}: {current} -> {new_status}")
         raise typer.Exit(1)
     data["status"] = new_status
     object_path.write_text(json.dumps(data, indent=2))
     console.print(f"[green]Updated[/green] {object_path} to status={new_status}")
+
 
 if __name__ == "__main__":
     app()

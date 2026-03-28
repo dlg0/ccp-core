@@ -112,130 +112,160 @@ Implementations may enrich these objects but should not redefine their core sema
 
 ---
 
-## 7. Suggested minimum fields
+## 7. v0.1 core field matrix
 
-## 7.1 Change Request
-```yaml
-id: CR-0001
-title: Emit required VEDA demand tables for declared demand nodes
-status: approved
-type: bug
-risk: medium
-sponsor: emily
-owner: david
-problem_statement: >
-  Demand declarations currently do not lower into the required VEDA tables.
-desired_end_state: >
-  Valid demand declarations lower consistently and produce documented mappings.
-acceptance_criteria:
-  - Representative demand declarations lower correctly
-  - Required tables are emitted
-  - Invalid declarations fail clearly
-non_goals:
-  - Full demand model redesign
-constraints:
-  - No silent coercion
-  - Preserve current schema where possible
-required_evidence:
-  - before_after_snapshots
-  - regression_tests
-  - invalid_example_error
-linked_decision_records:
-  - DR-0007
-linked_execution_plans:
-  - EP-0012
-```
+For v0.1, the field matrix below is normative for the four required CCP objects.
 
-## 7.2 Decision Record
-```yaml
-id: DR-0007
-title: Demand lowering should fail explicitly on ambiguous mappings
-status: accepted
-context: >
-  The team considered silent default mappings but rejected them.
-decision: >
-  Ambiguous mappings must raise an explicit diagnostic.
-alternatives_considered:
-  - silent default mapping
-  - warning-only fallback
-consequences:
-  - clearer user experience
-  - slightly more up-front authoring friction
-supersedes: null
-```
+- **Required** means the field must be present in serialized form.
+- **Nullable** means the literal `null` is allowed. If a field is not nullable and has no value, implementations should omit it rather than serialize `null`.
+- **Primary author** describes who usually introduces or maintains the field: `human`, `machine`, or `either`.
+- Change Requests and Decision Records are primarily human-authored objects. Execution Plans are primarily machine-authored planning objects. Evidence Packs are primarily machine-authored closeout objects that humans review.
 
-## 7.3 Execution Plan
-```yaml
-id: EP-0012
-change_request: CR-0001
-status: executing
-tasks:
-  - id: BEAD-481
-    title: Add lowering rule for demand declarations
-  - id: BEAD-482
-    title: Add regression fixtures
-  - id: BEAD-483
-    title: Add invalid-mapping diagnostics
-dependencies:
-  - BEAD-482 depends_on BEAD-481
-validation_plan:
-  - snapshot tests
-  - compiler diagnostics checks
-rollout_plan:
-  - merge directly to main after machine validation
-```
+### 7.1 Change Request
 
-## 7.4 Evidence Pack
-```yaml
-id: EV-0009
-change_request: CR-0001
-status: submitted
-acceptance_checklist:
-  - criterion: Representative demand declarations lower correctly
-    result: pass
-  - criterion: Invalid declarations fail clearly
-    result: pass
-artifacts:
-  - path: evidence/snapshots/before-after.md
-  - path: evidence/tests/regression-summary.json
-  - path: evidence/examples/invalid-case.txt
-unresolved_risks: []
-```
+| Field | Required | Nullable | Primary author | Semantics |
+| --- | --- | --- | --- | --- |
+| `id` | yes | no | either | Stable object identifier with `CR-` prefix. |
+| `kind` | yes | no | either | Literal discriminator `change_request`. |
+| `title` | yes | no | human | Short human-readable summary of the requested change. |
+| `status` | yes | no | either | Current lifecycle state of the Change Request. |
+| `type` | yes | no | human | High-level change category such as bug, feature, or migration. |
+| `risk` | yes | no | human | Review and rollout risk posture for the change. |
+| `sponsor` | no | no | human | Person or role sponsoring the change. Omit when no explicit sponsor is needed. |
+| `owner` | no | no | either | Person, team, or system accountable for driving the Change Request forward. Omit when not assigned yet. |
+| `problem_statement` | yes | no | human | Why the change is needed. |
+| `desired_end_state` | yes | no | human | Outcome that must be true when the change is complete. |
+| `acceptance_criteria` | yes | no | human | Non-empty list of conditions required to accept the change. |
+| `non_goals` | no | no | human | Explicit out-of-scope items. Omit when no non-goals need to be stated. |
+| `constraints` | yes | no | human | Non-empty list of implementation guardrails. |
+| `required_evidence` | yes | no | human | Non-empty list of evidence categories required before closeout. |
+| `linked_decision_records` | no | no | either | Decision Records that justify or constrain the change. Omit until such records exist. |
+| `linked_execution_plans` | no | no | either | Execution Plans created to implement the change. Omit until planning begins. |
+| `linked_evidence_packs` | no | no | either | Evidence Packs submitted against the change. Omit until evidence exists. |
+
+### 7.2 Decision Record
+
+| Field | Required | Nullable | Primary author | Semantics |
+| --- | --- | --- | --- | --- |
+| `id` | yes | no | either | Stable object identifier with `DR-` prefix. |
+| `kind` | yes | no | either | Literal discriminator `decision_record`. |
+| `title` | yes | no | human | Short human-readable summary of the decision. |
+| `status` | yes | no | either | Current lifecycle state of the Decision Record. |
+| `context` | yes | no | human | Background and forces that made the decision necessary. |
+| `decision` | yes | no | human | Chosen direction or rule. |
+| `alternatives_considered` | yes | no | human | Non-empty list of materially considered alternatives. |
+| `consequences` | yes | no | human | Non-empty list of consequences introduced by the decision. |
+| `supersedes` | no | no | human | Identifier of the earlier Decision Record replaced by this one. Omit when the record stands alone. |
+
+### 7.3 Execution Plan
+
+| Field | Required | Nullable | Primary author | Semantics |
+| --- | --- | --- | --- | --- |
+| `id` | yes | no | either | Stable object identifier with `EP-` prefix. |
+| `kind` | yes | no | either | Literal discriminator `execution_plan`. |
+| `change_request` | yes | no | either | Governing Change Request identifier for this plan. |
+| `status` | yes | no | either | Current lifecycle state of the Execution Plan. |
+| `tasks` | yes | no | machine | Non-empty ordered list of planned work items. |
+| `tasks[].id` | yes | no | either | Stable task identifier within the plan or linked execution system. |
+| `tasks[].title` | yes | no | machine | Human-readable description of the task's intended work. |
+| `dependencies` | no | no | machine | Dependency edges between task identifiers listed in `tasks`. Omit when the plan has no explicit task dependencies. |
+| `validation_plan` | yes | no | machine | Non-empty list of validations required before the change can move toward verification. |
+| `rollout_plan` | no | no | machine | Ordered release, activation, or migration steps that go beyond basic merge and validation. Omit when no extra rollout steps are needed. |
+
+### 7.4 Evidence Pack
+
+| Field | Required | Nullable | Primary author | Semantics |
+| --- | --- | --- | --- | --- |
+| `id` | yes | no | either | Stable object identifier with `EV-` prefix. |
+| `kind` | yes | no | either | Literal discriminator `evidence_pack`. |
+| `change_request` | yes | no | either | Change Request identifier satisfied or evaluated by this evidence. |
+| `status` | yes | no | either | Current lifecycle state of the Evidence Pack. |
+| `acceptance_checklist` | yes | no | machine | Non-empty list evaluating the approved acceptance criteria. |
+| `acceptance_checklist[].criterion` | yes | no | either | Acceptance criterion being evaluated, usually copied or derived from the Change Request. |
+| `acceptance_checklist[].result` | yes | no | machine | Evaluation result for the criterion. |
+| `artifacts` | yes | no | machine | Non-empty list of concrete evidence artifacts. |
+| `artifacts[].path` | yes | no | machine | Stable path or locator for an evidence artifact. |
+| `unresolved_risks` | yes | no | machine | Risks still open at verification time. Use an empty list when none remain. |
 
 ---
 
 ## 8. Workflow semantics
 
-The recommended CCP lifecycle is:
+CCP uses separate state machines for each required object. The Change Request carries the end-to-end governance lifecycle, while Decision Records, Execution Plans, and Evidence Packs have narrower supporting lifecycles.
+
+### 8.1 Change Request lifecycle
+
+The recommended Change Request lifecycle is:
 
 **draft → discussing → approved → planned → executing → verified → closed**
 
-### 8.1 Draft
-Problem is being framed. Discussion may still be informal.
+Allowed transitions:
 
-### 8.2 Discussing
-The Change Request is now explicit and open for human review. Decision Records may be drafted here.
+- `draft -> discussing`
+- `discussing -> approved`
+- `approved -> planned`
+- `planned -> executing`
+- `executing -> verified`
+- `verified -> closed`
+- `verified -> executing`
+- `verified -> discussing`
 
-### 8.3 Approved
-Human reviewers have approved the admission, contract, and risk posture. The change is authorized to enter planning.
+Status intent:
 
-### 8.4 Planned
-Execution Plan exists. Work can be decomposed into task-system items such as Beads epics/issues.
+- `draft`: problem framing is still incomplete or informal.
+- `discussing`: the Change Request is explicit and open for human review.
+- `approved`: reviewers have approved the admission, contract, and risk posture.
+- `planned`: at least one Execution Plan exists and work can be decomposed into executable tasks.
+- `executing`: workers are implementing and validating the approved change.
+- `verified`: evidence has been submitted and machine validation has passed.
+- `closed`: the change is complete under policy.
 
-### 8.5 Executing
-Workers are implementing and validating. Merge-to-main may occur here, depending on policy.
+### 8.2 Decision Record lifecycle
 
-### 8.6 Verified
-Evidence Pack has been submitted and machine validation has passed.
+Decision Records use a smaller lifecycle because they record design choices rather than end-to-end delivery.
 
-### 8.7 Closed
-The change is considered complete under policy.
+States: `draft`, `accepted`, `superseded`
+
+Allowed transitions:
+
+- `draft -> accepted`
+- `accepted -> superseded`
+
+### 8.3 Execution Plan lifecycle
+
+Execution Plans track planning and delivery progress for an approved Change Request.
+
+States: `draft`, `planned`, `executing`, `blocked`, `done`
+
+Allowed transitions:
+
+- `draft -> planned`
+- `planned -> executing`
+- `executing -> blocked`
+- `blocked -> executing`
+- `executing -> done`
+- `done -> executing`
+
+`done -> executing` is allowed when the approved contract has not changed but more implementation work is required after validation or evidence review.
+
+### 8.4 Evidence Pack lifecycle
+
+Evidence Packs model evidence assembly and review, not the full change lifecycle.
+
+States: `draft`, `submitted`, `accepted`, `rejected`
+
+Allowed transitions:
+
+- `draft -> submitted`
+- `submitted -> accepted`
+- `submitted -> rejected`
+- `rejected -> draft`
 
 ---
 
 ## 9. Failure and loop-back semantics
 
-If an Evidence Pack is reviewed and found deficient, CCP distinguishes two cases:
+If an Evidence Pack is reviewed and found deficient, the Change Request loop-back depends on which kind of problem was found. The Evidence Pack itself may move from `submitted` to `rejected`, but the governing Change Request distinguishes two cases:
 
 ### Case A: implementation or evidence problem
 Examples:
@@ -430,40 +460,29 @@ Implementations should not:
 
 ---
 
-## 18. Proposed repo layout for the control plane
+## 18. v0.1 repo layout and serialization policy
+
+For v0.1, the canonical portable representation is one JSON file per core object under a control-plane root.
+
+- A project may keep the control plane in a standalone repository or in a subdirectory such as `control/` inside a source repository. Both are conformant.
+- Unset optional fields are omitted rather than serialized as `null`.
+- Markdown, YAML, directory-per-object layouts, and event-log files are possible future extensions, but they are not the v0.1 portable default.
+
+Canonical layout relative to the control-plane root:
 
 ```text
-ccp-control-plane/
-  README.md
-  protocol/
-    version.json
-    profiles.md
-  policies/
-    review-policy.yaml
-    risk-policy.yaml
+<control-plane-root>/
   change-requests/
-    CR-0001/
-      change-request.md
-      events.log.yaml
-      linked-discussion.md
+    CR-0001.json
   decision-records/
-    DR-0007.md
+    DR-0007.json
   execution-plans/
-    EP-0012.yaml
-  evidence/
-    EV-0009/
-      evidence-pack.yaml
-      artifacts/
-  templates/
-    change-request.md
-    decision-record.md
-    evidence-pack.yaml
-  schemas/
-    change-request.schema.json
-    decision-record.schema.json
-    execution-plan.schema.json
-    evidence-pack.schema.json
+    EP-0012.json
+  evidence-packs/
+    EV-0009.json
 ```
+
+When a control plane is embedded inside a source repository, the same layout appears under the `control/` directory.
 
 ---
 

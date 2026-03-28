@@ -1,0 +1,34 @@
+{
+  "id": "CR-0004",
+  "kind": "change_request",
+  "title": "Freeze the v0.1 control-plane repo contract",
+  "status": "approved",
+  "type": "architecture",
+  "risk": "medium",
+  "problem_statement": "The consultation draft still describes a mixed markdown and YAML control-plane layout, while the CLI, schemas, examples, and dogfood objects all assume flat JSON files. The current schemas and templates also still allow or emit explicit nulls that now conflict with the v0.1 field-matrix decision.",
+  "desired_end_state": "CCP v0.1 defines a single portable on-disk contract: one JSON file per core object under a control-plane root, with unset optional fields omitted rather than serialized as null.",
+  "acceptance_criteria": [
+    "The consultation draft defines the canonical v0.1 control-plane layout and serialization policy",
+    "Schemas, examples, and dogfood objects omit optional fields instead of serializing null",
+    "The CLI init and new commands follow the same control-plane contract"
+  ],
+  "non_goals": [
+    "Define event-log semantics for future protocol versions",
+    "Add markdown or YAML parsing to the reference CLI"
+  ],
+  "constraints": [
+    "Keep the portable default JSON-only for v0.1",
+    "Allow the control plane to live either standalone or under a repo-local control/ directory"
+  ],
+  "required_evidence": [
+    "consultation-draft-update",
+    "cli-contract-tests",
+    "control-plane-validation"
+  ],
+  "linked_decision_records": [
+    "DR-0004"
+  ],
+  "linked_evidence_packs": [
+    "EV-0002"
+  ]
+}

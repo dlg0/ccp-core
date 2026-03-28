@@ -1,0 +1,16 @@
+{
+  "id": "DR-0002",
+  "kind": "decision_record",
+  "title": "Unset optional v0.1 core fields are omitted, not nulled",
+  "status": "accepted",
+  "context": "The current consultation draft and schemas mix absent fields with explicit nulls for sponsor, owner, supersedes, and rollout-related fields. Freezing the v0.1 field matrix requires one portable default representation for missing optional data.",
+  "decision": "For v0.1, optional core fields are omitted when unknown or not applicable. Null is not part of the portable default shape. Required list fields remain present, and where the protocol must say that nothing remains, an empty list is used instead.",
+  "alternatives_considered": [
+    "Allow broad nullability across optional core fields",
+    "Require every optional relationship and ownership field to be serialized explicitly"
+  ],
+  "consequences": [
+    "Schemas and templates should converge on omission for unset optional fields",
+    "The field matrix can distinguish optional from required without inventing a separate null semantic"
+  ]
+}

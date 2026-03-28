@@ -7,4 +7,5 @@ Expected directories:
 - `control/decision-records`
 - `control/execution-plans`
 - `control/evidence-packs`
-- `control/events`
+
+The v0.1 portable default is flat JSON files named `{id}.json` inside those directories. Event logs and directory-per-object layouts are intentionally left for later protocol work.
