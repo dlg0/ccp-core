@@ -110,6 +110,10 @@ CCP defines four core objects and two optional coordination objects.
 
 Implementations may enrich these objects but should not redefine their core semantics.
 
+For the frozen v0.1 contract, these coordination objects are optional extension material. CCP does not require a portable event-log format or standalone review-event files for core-object interoperability.
+
+Human review and approval become protocol-significant when they are reflected in the lifecycle state of the governed core object. Any standalone review or claim records remain supporting history.
+
 ---
 
 ## 7. v0.1 core field matrix
@@ -329,7 +333,9 @@ A dedicated git-backed repository for:
 - Evidence manifests
 - review policy
 - protocol metadata
-- append-oriented status/event records
+- optional coordination history when an implementation chooses to persist it
+
+For the frozen v0.1 compatibility baseline, the portable default requires only the four core object directories. Event logs and standalone review histories remain optional extensions.
 
 ### 11.3 Execution plane
 A live task store such as Dolt/Beads holding:
@@ -448,6 +454,7 @@ The protocol must remain usable without that CLI.
 Implementations may add:
 - richer permissions
 - richer review workflows
+- coordination histories such as task-claim logs or review events
 - custom evidence artifact types
 - analytics
 - dashboards
@@ -455,6 +462,8 @@ Implementations may add:
 
 Implementations should not:
 - redefine Change Request semantics
+- treat extension events as a replacement for core object status
+- make optional coordination objects mandatory for basic interoperability
 - make hosted infrastructure mandatory for basic interoperability
 - make exported CCP objects unusable outside their product
 
@@ -565,7 +574,7 @@ This gives the protocol immediate credibility because it is used to govern its o
 ## 22. Consultation questions
 
 1. Should Change Requests be markdown with front matter, pure YAML/JSON, or dual-format?
-2. Which review events are mandatory for protocol interoperability?
+2. Which optional review events would be most useful to standardize in a future version?
 3. Should Evidence Packs support partial acceptance or only pass/fail closeout?
 4. Should task claim/lease semantics be standardized at the protocol layer or left implementation-specific?
 5. How strict should conformance be around local-first export/import?

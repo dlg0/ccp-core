@@ -50,7 +50,11 @@ CCP v0.1 defines four required core objects and two optional coordination object
 1. Task Claim / Lease
 2. Review / Approval Event
 
+CCP v0.1 names these coordination concepts, but it does not define a required field matrix, canonical repository location, or portable serialized form for them.
+
 Implementations MAY add additional objects, but they MUST NOT redefine the core semantics of the four required objects.
+
+Human review and approval become normative for v0.1 only when reflected in the lifecycle state of the relevant core object. Optional coordination artifacts MAY record supporting history, but they do not replace core object status.
 
 ---
 
@@ -293,17 +297,19 @@ An implementation claiming CCP v0.1 compatibility MUST allow teams to read, vali
 
 ### 9.3 Extension rules
 
-Implementations MAY add richer permissions, review workflows, evidence artifact types, analytics, dashboards, or hosted orchestration.
+Implementations MAY add richer permissions, review workflows, coordination histories such as task-claim logs or review events, evidence artifact types, analytics, dashboards, or hosted orchestration.
 
 Implementations MUST NOT:
 
 - redefine the core semantics of Change Requests, Decision Records, Execution Plans, or Evidence Packs
+- treat optional coordination artifacts as a substitute for required core object lifecycle state
+- make optional coordination objects mandatory for basic read, validate, or exchange of CCP core objects
 - require hosted infrastructure for basic CCP object interoperability
 - export CCP objects in a form that prevents use outside the implementation
 
 ### 9.4 Product boundary
 
-Product behavior such as UX, indexing strategy, worker runtime defaults, integrations, analytics, and commercial packaging is outside the CCP v0.1 normative surface unless explicitly serialized into CCP objects without changing their defined meaning.
+Product behavior such as UX, reviewer assignment models, approval policy, event-log schema and storage, indexing strategy, worker runtime defaults, integrations, analytics, and commercial packaging is outside the CCP v0.1 normative surface unless explicitly serialized into CCP objects without changing their defined meaning.
 
 ---
 

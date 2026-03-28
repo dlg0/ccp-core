@@ -1,0 +1,34 @@
+{
+  "id": "CR-0005",
+  "kind": "change_request",
+  "title": "Clarify v0.1 optional review/event semantics and extension boundary",
+  "status": "approved",
+  "type": "architecture",
+  "risk": "low",
+  "problem_statement": "The frozen v0.1 spec names Task Claim / Lease and Review / Approval Event as optional coordination objects, but the docs still leave open whether a portable event log is required and where richer review history belongs. The consultation draft and architecture note also still imply append-oriented event records as part of the default control-plane shape.",
+  "desired_end_state": "The normative spec says review and event history is optional extension material, the portable v0.1 repository contract remains limited to the four core object directories, and the supporting docs explain that implementations may add coordination artifacts without redefining core semantics.",
+  "acceptance_criteria": [
+    "The normative spec explains the minimum v0.1 semantics for optional coordination objects and says event or review history is not required in the portable repository contract",
+    "The consultation draft, architecture note, and Foundry boundary note align with that extension boundary",
+    "Repo validation and test commands still pass after the documentation update"
+  ],
+  "non_goals": [
+    "Standardize a canonical review-event schema for v0.1",
+    "Require a control/events directory or append-only event log in the portable layout"
+  ],
+  "constraints": [
+    "Keep v0.1 implementation-neutral and local-first",
+    "Do not make Foundry review UX or runtime behavior normative"
+  ],
+  "required_evidence": [
+    "normative-spec-update",
+    "supporting-doc-alignment",
+    "control-plane-validation"
+  ],
+  "linked_decision_records": [
+    "DR-0005"
+  ],
+  "linked_evidence_packs": [
+    "EV-0003"
+  ]
+}

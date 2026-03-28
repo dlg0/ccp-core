@@ -22,7 +22,7 @@ A valid CCP workflow can exist with:
 The code and other implementation artifacts.
 
 ### 2. Control plane
-Change Requests, Decision Records, Execution Plans, Evidence Packs, and related events.
+Change Requests, Decision Records, Execution Plans, Evidence Packs, and any optional coordination history an implementation chooses to keep.
 
 ### 3. Execution plane
 Live task coordination. This may be Beads + Dolt, a simpler local queue, or another compatible system.
@@ -31,9 +31,11 @@ CCP core defines the control-plane semantics. It does not mandate the execution 
 
 ## Control-plane storage
 
-The recommended default is a dedicated git repo containing structured CCP objects and append-oriented history.
+The recommended default is a dedicated git repo containing structured CCP objects and any optional extension history a project wants to keep.
 
 For the frozen v0.1 portable contract, the control plane uses one JSON file per core object under a control-plane root. That root may be a standalone repository or a repo-local `control/` directory.
+
+Review-event files, task-claim logs, and other coordination history may exist as extensions, but they are not required by the portable v0.1 baseline.
 
 Reasoning:
 - auditable

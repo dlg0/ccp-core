@@ -31,6 +31,8 @@ It defines:
 - UX
 - CLI
 - worker runtime behavior
+- reviewer assignment, approval policy, and notification behavior
+- review/event feeds, indexing, and storage choices
 - indexing/search
 - integrations
 - hosting and commercial packaging
@@ -84,3 +86,5 @@ For this project:
 - publish protocol version metadata alongside the docs and schemas
 - publish **Foundry** as the implementation/product PRD
 - use the project itself as the first open CCP-governed Foundry dogfood project
+
+CCP v0.1 can name optional coordination concepts such as task claims and review events without standardizing a product-specific event log, approval UI, or reviewer workflow. Those remain on the Foundry side unless a future CCP version standardizes them explicitly.

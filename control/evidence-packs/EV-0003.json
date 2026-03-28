@@ -1,0 +1,38 @@
+{
+  "id": "EV-0003",
+  "kind": "evidence_pack",
+  "change_request": "CR-0005",
+  "status": "submitted",
+  "acceptance_checklist": [
+    {
+      "criterion": "The normative spec explains the minimum v0.1 semantics for optional coordination objects and says event or review history is not required in the portable repository contract",
+      "result": "pass"
+    },
+    {
+      "criterion": "The consultation draft, architecture note, and Foundry boundary note align with that extension boundary",
+      "result": "pass"
+    },
+    {
+      "criterion": "Repo validation and test commands still pass after the documentation update",
+      "result": "pass"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/CCP_NORMATIVE_SPEC_V0.1.md"
+    },
+    {
+      "path": "docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/FOUNDRY_BOUNDARY.md"
+    },
+    {
+      "path": "tests/"
+    }
+  ],
+  "unresolved_risks": []
+}

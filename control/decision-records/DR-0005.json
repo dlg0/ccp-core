@@ -1,0 +1,16 @@
+{
+  "id": "DR-0005",
+  "kind": "decision_record",
+  "title": "Review and event history remains optional extension material in CCP v0.1",
+  "status": "accepted",
+  "context": "The frozen v0.1 contract already limits the portable repository layout to one JSON file per required core object, but the spec package still leaves room to misread review events or event logs as mandatory serialized artifacts. That ambiguity risks leaking product-specific approval workflows and event storage choices into the protocol baseline.",
+  "decision": "For CCP v0.1, human review and approval become normative only when reflected in the lifecycle state of the relevant core object. Task claims, review events, and richer event histories remain optional extensions with implementation-defined storage and schemas, and they must not replace the portable export of the four required core objects.",
+  "alternatives_considered": [
+    "Define a mandatory portable review-event schema and control/events layout in v0.1",
+    "Leave event and review semantics implicit in supporting docs without an explicit boundary"
+  ],
+  "consequences": [
+    "Implementations may keep richer review and execution history without fragmenting the frozen v0.1 portable default",
+    "Approval workflows, event feeds, and coordination storage choices stay outside the CCP core normative surface unless a future version standardizes them"
+  ]
+}
