@@ -1,0 +1,31 @@
+{
+  "id": "EP-0001",
+  "kind": "execution_plan",
+  "change_request": "CR-0001",
+  "status": "planned",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Write schemas"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Implement CLI validate/init/new"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Add fixtures and tests"
+    }
+  ],
+  "dependencies": [
+    "TASK-003 depends_on TASK-001",
+    "TASK-003 depends_on TASK-002"
+  ],
+  "validation_plan": [
+    "Validate all examples",
+    "Run CLI smoke tests"
+  ],
+  "rollout_plan": [
+    "Tag v0.1.0-alpha when tests pass"
+  ]
+}

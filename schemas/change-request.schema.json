@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccp.dev/schemas/change-request.schema.json",
+  "title": "CCP Change Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "title",
+    "status",
+    "type",
+    "risk",
+    "problem_statement",
+    "desired_end_state",
+    "acceptance_criteria",
+    "constraints",
+    "required_evidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^CR-[0-9]{4}$"
+    },
+    "kind": {
+      "const": "change_request"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "discussing",
+        "approved",
+        "planned",
+        "executing",
+        "verified",
+        "closed"
+      ]
+    },
+    "type": {
+      "enum": [
+        "bug",
+        "feature",
+        "refactor",
+        "architecture",
+        "migration",
+        "ops",
+        "spike"
+      ]
+    },
+    "risk": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "sponsor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "owner": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "problem_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "desired_end_state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "non_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "required_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "linked_decision_records": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^DR-[0-9]{4}$"
+      }
+    },
+    "linked_execution_plans": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^EP-[0-9]{4}$"
+      }
+    },
+    "linked_evidence_packs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^EV-[0-9]{4}$"
+      }
+    }
+  }
+}

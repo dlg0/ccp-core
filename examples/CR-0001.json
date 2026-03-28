@@ -1,0 +1,39 @@
+{
+  "id": "CR-0001",
+  "kind": "change_request",
+  "title": "Publish CCP v0.1 consultation draft and working CLI",
+  "status": "approved",
+  "type": "feature",
+  "risk": "medium",
+  "sponsor": "david",
+  "owner": "ccp-core",
+  "problem_statement": "CCP needs an executable core so the protocol is testable and locally usable.",
+  "desired_end_state": "The repo contains a consultation draft, schemas, examples, and a working CLI for local CCP workflows.",
+  "acceptance_criteria": [
+    "Schemas exist for all four core object types",
+    "CLI can init, new, validate, render, and index a CCP repo",
+    "Examples validate against schemas"
+  ],
+  "non_goals": [
+    "Hosted workflow UI",
+    "Full product implementation"
+  ],
+  "constraints": [
+    "Do not make Foundry-specific behavior normative",
+    "Keep local-first operation intact"
+  ],
+  "required_evidence": [
+    "schema-validation",
+    "cli-demo",
+    "fixture-tests"
+  ],
+  "linked_decision_records": [
+    "DR-0001"
+  ],
+  "linked_execution_plans": [
+    "EP-0001"
+  ],
+  "linked_evidence_packs": [
+    "EV-0001"
+  ]
+}

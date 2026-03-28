@@ -1,0 +1,17 @@
+{
+  "id": "DR-0001",
+  "kind": "decision_record",
+  "title": "CCP ships as spec plus thin reference toolkit",
+  "status": "accepted",
+  "context": "A prose-only spec would drift in implementation; a full product in the core repo would collapse the boundary with Foundry.",
+  "decision": "Ship CCP as an open spec plus a small local CLI, while keeping rich UX and orchestration in Foundry.",
+  "alternatives_considered": [
+    "Spec only with no executable toolkit",
+    "Turn CCP core into a full collaboration product"
+  ],
+  "consequences": [
+    "The protocol becomes testable and locally usable",
+    "Foundry can remain a distinct product implementation"
+  ],
+  "supersedes": null
+}

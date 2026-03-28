@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccp.dev/schemas/decision-record.schema.json",
+  "title": "CCP Decision Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "title",
+    "status",
+    "context",
+    "decision",
+    "alternatives_considered",
+    "consequences"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^DR-[0-9]{4}$"
+    },
+    "kind": {
+      "const": "decision_record"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "accepted",
+        "superseded"
+      ]
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alternatives_considered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "consequences": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "supersedes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^DR-[0-9]{4}$"
+    }
+  }
+}

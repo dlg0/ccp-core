@@ -1,0 +1,34 @@
+{
+  "id": "EV-0001",
+  "kind": "evidence_pack",
+  "change_request": "CR-0001",
+  "status": "submitted",
+  "acceptance_checklist": [
+    {
+      "criterion": "Schemas exist for all four core object types",
+      "result": "pass"
+    },
+    {
+      "criterion": "CLI can init, new, validate, render, and index a CCP repo",
+      "result": "partial"
+    },
+    {
+      "criterion": "Examples validate against schemas",
+      "result": "pass"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "schemas/"
+    },
+    {
+      "path": "tests/"
+    },
+    {
+      "path": "README.md"
+    }
+  ],
+  "unresolved_risks": [
+    "CLI transition behavior not fully implemented yet"
+  ]
+}
