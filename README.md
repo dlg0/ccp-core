@@ -24,7 +24,7 @@ Foundry is expected to be a strong product implementation of CCP, but CCP must s
 
 - `PRD.md` — build brief for this repo
 - `AGENTS.md` — instructions for coding/design agents
-- `docs/` — consultation draft, architecture, and repo notes
+- `docs/` — normative spec, consultation draft, architecture, and repo notes
 - `schemas/` — JSON schemas for CCP core objects
 - `examples/` — example CCP objects
 - `templates/` — local control-plane repo templates
@@ -34,7 +34,7 @@ Foundry is expected to be a strong product implementation of CCP, but CCP must s
 
 ## Immediate goal
 
-Ship a public **v0.1 consultation draft** and a usable local CLI that can:
+Ship a public **v0.1 consultation draft**, a clear normative spec, and a usable local CLI that can:
 - initialize a CCP control-plane repo
 - create new CCP objects
 - validate them against schemas
