@@ -25,12 +25,21 @@ Foundry is expected to be a strong product implementation of CCP, but CCP must s
 - `PRD.md` — build brief for this repo
 - `AGENTS.md` — instructions for coding/design agents
 - `docs/` — normative spec, consultation draft, architecture, and repo notes
+- `protocol/` — protocol version metadata and document pointers
 - `schemas/` — JSON schemas for CCP core objects
 - `examples/` — example CCP objects
 - `templates/` — local control-plane repo templates
 - `src/ccp_cli/` — reference CLI
 - `tests/` — conformance and CLI tests
 - `control/` — this repo dogfooding CCP for its own evolution
+
+## Key Documents
+
+- [Normative spec](docs/CCP_NORMATIVE_SPEC_V0.1.md) — binding v0.1 object, lifecycle, repo-contract, and interoperability rules
+- [Consultation draft](docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md) — explanatory background and non-normative consultation material
+- [Architecture note](docs/ARCHITECTURE.md) — control-plane, execution-plane, and worker model overview
+- [Foundry boundary note](docs/FOUNDRY_BOUNDARY.md) — protocol versus product split
+- [Protocol metadata](protocol/version.json) — machine-readable version and document map
 
 ## Immediate goal
 

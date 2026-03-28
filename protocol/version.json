@@ -1,0 +1,21 @@
+{
+  "protocol": "CCP",
+  "version": "v0.1",
+  "status": "normative",
+  "normative_spec": "docs/CCP_NORMATIVE_SPEC_V0.1.md",
+  "consultation_draft": "docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md",
+  "architecture_note": "docs/ARCHITECTURE.md",
+  "foundry_boundary_note": "docs/FOUNDRY_BOUNDARY.md",
+  "schemas": {
+    "change_request": "schemas/change-request.schema.json",
+    "decision_record": "schemas/decision-record.schema.json",
+    "execution_plan": "schemas/execution-plan.schema.json",
+    "evidence_pack": "schemas/evidence-pack.schema.json"
+  },
+  "portable_control_plane": {
+    "serialized_form": "json",
+    "layout": "one file per core object under a control-plane root",
+    "embedded_control_root": "control/",
+    "omit_unset_optional_fields": true
+  }
+}

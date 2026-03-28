@@ -6,6 +6,8 @@ Yes — keep them separate.
 
 Not just because the writing is cleaner, but because they are genuinely different things with different jobs.
 
+For this repo, that means the binding CCP v0.1 rules live in `docs/CCP_NORMATIVE_SPEC_V0.1.md`, the consultation draft remains explanatory background in `docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md`, and machine-readable version metadata lives in `protocol/version.json`.
+
 ## The clean split
 
 ### CCP
@@ -50,7 +52,7 @@ If you put them in one PRD, one of two bad things happens:
 
 That is why the right structure is:
 
-- **CCP Consultation Draft / Spec**
+- **CCP Normative Spec + Consultation Draft**
 - **Foundry Product PRD**
 - optional **Boundary Note** like this one
 
@@ -78,6 +80,7 @@ If the answer to any of these is “no”, the split is being violated.
 
 For this project:
 
-- publish **CCP** as the public consultation spec
+- publish **CCP** as a normative spec plus consultation draft
+- publish protocol version metadata alongside the docs and schemas
 - publish **Foundry** as the implementation/product PRD
 - use the project itself as the first open CCP-governed Foundry dogfood project

@@ -1,5 +1,11 @@
 # CCP Core Architecture
 
+This note explains the shape of the system around the frozen CCP v0.1 contract.
+
+- The binding v0.1 rules live in `docs/CCP_NORMATIVE_SPEC_V0.1.md`.
+- The consultation draft in `docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md` remains useful background, but it is not the compatibility source of truth.
+- Machine-readable version metadata lives in `protocol/version.json`.
+
 ## Canonical idea
 
 CCP is a **protocol and object model**, not a centralized system.
@@ -26,6 +32,8 @@ CCP core defines the control-plane semantics. It does not mandate the execution 
 ## Control-plane storage
 
 The recommended default is a dedicated git repo containing structured CCP objects and append-oriented history.
+
+For the frozen v0.1 portable contract, the control plane uses one JSON file per core object under a control-plane root. That root may be a standalone repository or a repo-local `control/` directory.
 
 Reasoning:
 - auditable
@@ -56,3 +64,5 @@ The `ccp` CLI should be:
 - deterministic
 
 It should never become the only way to understand CCP.
+
+It should follow the normative spec and protocol metadata, not replace them.
