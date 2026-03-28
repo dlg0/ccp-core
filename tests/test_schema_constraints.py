@@ -63,6 +63,30 @@ def load_schema(name: str) -> dict:
                 "consequences": ["Cleaner serialized objects"],
             },
         ),
+        (
+            "evidence-pack.schema.json",
+            {
+                "id": "EV-9001",
+                "kind": "evidence_pack",
+                "change_request": "CR-9001",
+                "status": "submitted",
+                "acceptance_checklist": [{"criterion": "Criterion text", "result": ""}],
+                "artifacts": [{"path": "artifacts/report.txt"}],
+                "unresolved_risks": [],
+            },
+        ),
+        (
+            "evidence-pack.schema.json",
+            {
+                "id": "EV-9002",
+                "kind": "evidence_pack",
+                "change_request": "CR-9001",
+                "status": "submitted",
+                "acceptance_checklist": [{"criterion": "Criterion text", "result": "needs_followup"}],
+                "artifacts": [{"path": "artifacts/report.txt"}],
+                "unresolved_risks": [""],
+            },
+        ),
     ],
 )
 def test_schema_rejects_blank_or_empty_optional_shapes(schema_name: str, data: dict):
@@ -70,3 +94,18 @@ def test_schema_rejects_blank_or_empty_optional_shapes(schema_name: str, data: d
 
     with pytest.raises(ValidationError):
         Draft202012Validator(schema).validate(data)
+
+
+def test_evidence_pack_schema_allows_non_enum_result_values():
+    schema = load_schema("evidence-pack.schema.json")
+    data = {
+        "id": "EV-9003",
+        "kind": "evidence_pack",
+        "change_request": "CR-9001",
+        "status": "submitted",
+        "acceptance_checklist": [{"criterion": "Criterion text", "result": "needs_followup"}],
+        "artifacts": [{"path": "artifacts/report.txt"}],
+        "unresolved_risks": [],
+    }
+
+    Draft202012Validator(schema).validate(data)
