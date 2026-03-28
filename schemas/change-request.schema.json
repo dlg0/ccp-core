@@ -59,10 +59,12 @@
       ]
     },
     "sponsor": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "owner": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1
     },
     "problem_statement": {
       "type": "string",
@@ -83,8 +85,10 @@
     "non_goals": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
     },
     "constraints": {
       "type": "array",
@@ -107,21 +111,24 @@
       "items": {
         "type": "string",
         "pattern": "^DR-[0-9]{4}$"
-      }
+      },
+      "minItems": 1
     },
     "linked_execution_plans": {
       "type": "array",
       "items": {
         "type": "string",
         "pattern": "^EP-[0-9]{4}$"
-      }
+      },
+      "minItems": 1
     },
     "linked_evidence_packs": {
       "type": "array",
       "items": {
         "type": "string",
         "pattern": "^EV-[0-9]{4}$"
-      }
+      },
+      "minItems": 1
     }
   }
 }
