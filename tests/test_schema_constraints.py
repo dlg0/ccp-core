@@ -64,6 +64,30 @@ def load_schema(name: str) -> dict:
             },
         ),
         (
+            "execution-plan.schema.json",
+            {
+                "id": "EP-9001",
+                "kind": "execution_plan",
+                "change_request": "CR-9001",
+                "status": "planned",
+                "tasks": [{"id": "TASK-001", "title": "Describe work"}],
+                "dependencies": [],
+                "validation_plan": ["Run schema validation"],
+            },
+        ),
+        (
+            "execution-plan.schema.json",
+            {
+                "id": "EP-9002",
+                "kind": "execution_plan",
+                "change_request": "CR-9001",
+                "status": "planned",
+                "tasks": [{"id": "TASK-001", "title": "Describe work"}],
+                "dependencies": ["TASK-002 -> TASK-001"],
+                "validation_plan": ["Run schema validation"],
+            },
+        ),
+        (
             "evidence-pack.schema.json",
             {
                 "id": "EV-9001",
@@ -106,6 +130,24 @@ def test_evidence_pack_schema_allows_non_enum_result_values():
         "acceptance_checklist": [{"criterion": "Criterion text", "result": "needs_followup"}],
         "artifacts": [{"path": "artifacts/report.txt"}],
         "unresolved_risks": [],
+    }
+
+    Draft202012Validator(schema).validate(data)
+
+
+def test_execution_plan_schema_allows_canonical_dependency_edges():
+    schema = load_schema("execution-plan.schema.json")
+    data = {
+        "id": "EP-9003",
+        "kind": "execution_plan",
+        "change_request": "CR-9001",
+        "status": "planned",
+        "tasks": [
+            {"id": "TASK-001", "title": "Describe work"},
+            {"id": "TASK-002", "title": "Validate work"},
+        ],
+        "dependencies": ["TASK-002 depends_on TASK-001"],
+        "validation_plan": ["Run schema validation"],
     }
 
     Draft202012Validator(schema).validate(data)

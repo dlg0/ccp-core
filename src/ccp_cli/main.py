@@ -87,8 +87,6 @@ TEMPLATES = {
         "status": "draft",
         "tasks": [{"id": "TASK-001", "title": "Describe work"}],
         "validation_plan": ["Describe validation"],
-        "dependencies": [],
-        "rollout_plan": [],
     },
     "evidence_pack": {
         "id": "EV-0001",
