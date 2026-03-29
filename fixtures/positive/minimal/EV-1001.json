@@ -1,0 +1,18 @@
+{
+  "id": "EV-1001",
+  "kind": "evidence_pack",
+  "change_request": "CR-1001",
+  "status": "draft",
+  "acceptance_checklist": [
+    {
+      "criterion": "The fixture validates against evidence-pack.schema.json",
+      "result": "pass"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "fixtures/positive/minimal/EV-1001.json"
+    }
+  ],
+  "unresolved_risks": []
+}

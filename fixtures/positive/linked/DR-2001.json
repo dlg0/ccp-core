@@ -1,0 +1,17 @@
+{
+  "id": "DR-2001",
+  "kind": "decision_record",
+  "title": "Freeze linked fixtures to the portable CCP v0.1 JSON contract",
+  "status": "accepted",
+  "context": "The positive fixture suite needs a richer Decision Record that stays within the CCP core boundary while showing an allowed linkage field.",
+  "decision": "Model the richer Decision Record as an accepted record that supersedes an earlier minimal example without introducing product-specific metadata.",
+  "alternatives_considered": [
+    "Keep the richer Decision Record identical to the minimal fixture",
+    "Add implementation-specific review or orchestration fields"
+  ],
+  "consequences": [
+    "The fixture demonstrates the optional supersedes field",
+    "The suite stays aligned with the frozen normative schema"
+  ],
+  "supersedes": "DR-1001"
+}

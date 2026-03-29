@@ -1,0 +1,31 @@
+{
+  "id": "EP-2001",
+  "kind": "execution_plan",
+  "change_request": "CR-2001",
+  "status": "executing",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Author the linked Change Request fixture"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Author the linked Decision Record fixture"
+    },
+    {
+      "id": "TASK-003",
+      "title": "Validate the linked fixture set"
+    }
+  ],
+  "dependencies": [
+    "TASK-003 depends_on TASK-001",
+    "TASK-003 depends_on TASK-002"
+  ],
+  "validation_plan": [
+    "Validate each linked fixture against its schema",
+    "Confirm dependency edges use the canonical depends_on string form"
+  ],
+  "rollout_plan": [
+    "Commit the positive fixture set once validation passes"
+  ]
+}

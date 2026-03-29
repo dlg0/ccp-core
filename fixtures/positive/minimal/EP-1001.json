@@ -1,0 +1,15 @@
+{
+  "id": "EP-1001",
+  "kind": "execution_plan",
+  "change_request": "CR-1001",
+  "status": "draft",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Describe the work"
+    }
+  ],
+  "validation_plan": [
+    "Validate the fixture against execution-plan.schema.json"
+  ]
+}

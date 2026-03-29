@@ -1,0 +1,14 @@
+{
+  "id": "DR-1001",
+  "kind": "decision_record",
+  "title": "Minimal valid Decision Record fixture",
+  "status": "draft",
+  "context": "Positive fixtures need a smallest valid Decision Record shape.",
+  "decision": "Keep the minimal fixture to the required v0.1 fields only.",
+  "alternatives_considered": [
+    "Add optional linkage fields to the minimal fixture"
+  ],
+  "consequences": [
+    "The fixture stays focused on the required Decision Record contract"
+  ]
+}

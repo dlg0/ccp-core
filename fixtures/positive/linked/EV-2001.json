@@ -1,0 +1,34 @@
+{
+  "id": "EV-2001",
+  "kind": "evidence_pack",
+  "change_request": "CR-2001",
+  "status": "submitted",
+  "acceptance_checklist": [
+    {
+      "criterion": "The linked Change Request validates against change-request.schema.json",
+      "result": "pass"
+    },
+    {
+      "criterion": "The linked fixture set uses only frozen v0.1 fields",
+      "result": "pass"
+    },
+    {
+      "criterion": "The linked fixture set is ready for parameterized positive validation tests",
+      "result": "needs_followup"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "fixtures/positive/linked/CR-2001.json"
+    },
+    {
+      "path": "fixtures/positive/linked/DR-2001.json"
+    },
+    {
+      "path": "fixtures/positive/linked/EP-2001.json"
+    }
+  ],
+  "unresolved_risks": [
+    "Positive fixture parameterization is tracked separately"
+  ]
+}

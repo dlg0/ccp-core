@@ -1,0 +1,38 @@
+{
+  "id": "CR-2001",
+  "kind": "change_request",
+  "title": "Linked valid fixture chain for a portability-hardening change",
+  "status": "executing",
+  "type": "migration",
+  "risk": "medium",
+  "sponsor": "spec-editor",
+  "owner": "ccp-core",
+  "problem_statement": "Positive fixtures need a richer Change Request that exercises optional fields and object linking without adding new protocol structure.",
+  "desired_end_state": "A linked Change Request fixture demonstrates the frozen v0.1 JSON contract with associated DR, EP, and EV objects.",
+  "acceptance_criteria": [
+    "The linked Change Request validates against change-request.schema.json",
+    "The linked fixture set uses only frozen v0.1 fields",
+    "The linked Change Request references its related DR, EP, and EV objects by identifier"
+  ],
+  "non_goals": [
+    "Introduce hosted workflow semantics",
+    "Define product-specific coordination objects"
+  ],
+  "constraints": [
+    "Keep the fixture portable as one JSON file per core object",
+    "Omit optional fields when they are not needed"
+  ],
+  "required_evidence": [
+    "schema-validation",
+    "fixture-validation"
+  ],
+  "linked_decision_records": [
+    "DR-2001"
+  ],
+  "linked_execution_plans": [
+    "EP-2001"
+  ],
+  "linked_evidence_packs": [
+    "EV-2001"
+  ]
+}

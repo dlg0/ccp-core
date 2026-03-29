@@ -1,0 +1,19 @@
+{
+  "id": "CR-1001",
+  "kind": "change_request",
+  "title": "Minimal valid Change Request fixture",
+  "status": "draft",
+  "type": "feature",
+  "risk": "low",
+  "problem_statement": "Positive fixtures need a smallest valid Change Request shape.",
+  "desired_end_state": "A required-fields-only Change Request fixture validates against the frozen CCP v0.1 schema.",
+  "acceptance_criteria": [
+    "The fixture validates against change-request.schema.json"
+  ],
+  "constraints": [
+    "Use only frozen CCP v0.1 fields"
+  ],
+  "required_evidence": [
+    "schema-validation"
+  ]
+}
