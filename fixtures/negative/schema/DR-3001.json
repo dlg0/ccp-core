@@ -1,0 +1,14 @@
+{
+  "id": "DR-3001",
+  "kind": "decision_record",
+  "title": "Negative Decision Record fixture with an invalid status",
+  "status": "approved",
+  "context": "Negative fixtures should cover statuses outside the frozen Decision Record lifecycle.",
+  "decision": "Keep this fixture otherwise valid so the failure stays focused on status.",
+  "alternatives_considered": [
+    "Use a valid status and break another field instead"
+  ],
+  "consequences": [
+    "Schema validation should reject the object"
+  ]
+}

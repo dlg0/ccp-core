@@ -1,0 +1,15 @@
+{
+  "id": "DR-4001",
+  "kind": "decision_record",
+  "title": "Semantic negative Decision Record fixture with a missing superseded record",
+  "status": "accepted",
+  "context": "Negative fixtures should cover Decision Record links that point to missing predecessors.",
+  "decision": "Leave the record schema-valid but reference a non-existent superseded Decision Record.",
+  "alternatives_considered": [
+    "Make the record schema-invalid instead"
+  ],
+  "consequences": [
+    "Semantic validation should reject the unresolved supersedes link"
+  ],
+  "supersedes": "DR-9999"
+}

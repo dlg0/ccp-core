@@ -1,0 +1,18 @@
+{
+  "id": "EV-4001",
+  "kind": "evidence_pack",
+  "change_request": "CR-9999",
+  "status": "submitted",
+  "acceptance_checklist": [
+    {
+      "criterion": "Semantic validation rejects missing governing Change Requests",
+      "result": "fail"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "fixtures/negative/semantic/EV-4001.json"
+    }
+  ],
+  "unresolved_risks": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "EP-4001",
+  "kind": "execution_plan",
+  "change_request": "CR-9999",
+  "status": "planned",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Describe the work"
+    }
+  ],
+  "validation_plan": [
+    "Semantic validation rejects the missing governing Change Request"
+  ]
+}

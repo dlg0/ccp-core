@@ -1,0 +1,22 @@
+{
+  "id": "EP-3001",
+  "kind": "execution_plan",
+  "change_request": "CR-1001",
+  "status": "planned",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Describe the work"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Validate the work"
+    }
+  ],
+  "dependencies": [
+    "TASK-002 -> TASK-001"
+  ],
+  "validation_plan": [
+    "Schema validation rejects malformed dependency edges"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "CR-4001",
+  "kind": "change_request",
+  "title": "Semantic negative Change Request fixture with a broken linked Decision Record",
+  "status": "approved",
+  "type": "architecture",
+  "risk": "medium",
+  "problem_statement": "Negative fixtures should cover linked object identifiers that do not resolve inside the fixture set.",
+  "desired_end_state": "Semantic validation flags the unresolved Decision Record link.",
+  "acceptance_criteria": [
+    "Semantic validation rejects the missing linked Decision Record"
+  ],
+  "constraints": [
+    "Keep the object schema-valid"
+  ],
+  "required_evidence": [
+    "semantic-validation"
+  ],
+  "linked_decision_records": [
+    "DR-9999"
+  ]
+}

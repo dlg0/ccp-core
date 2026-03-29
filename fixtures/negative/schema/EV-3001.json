@@ -1,0 +1,18 @@
+{
+  "id": "EV-3001",
+  "kind": "evidence_pack",
+  "change_request": "CR-1001",
+  "status": "submitted",
+  "acceptance_checklist": [
+    {
+      "criterion": "Negative fixtures should cover blank checklist results",
+      "result": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "fixtures/negative/schema/EV-3001.json"
+    }
+  ],
+  "unresolved_risks": []
+}

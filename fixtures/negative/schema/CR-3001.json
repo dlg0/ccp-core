@@ -1,0 +1,18 @@
+{
+  "id": "CR-3001",
+  "kind": "change_request",
+  "title": "Negative Change Request fixture missing a required field",
+  "status": "draft",
+  "type": "feature",
+  "risk": "low",
+  "problem_statement": "Negative fixtures should cover missing required fields.",
+  "acceptance_criteria": [
+    "Schema validation fails when desired_end_state is omitted"
+  ],
+  "constraints": [
+    "Keep the object otherwise aligned with the frozen v0.1 shape"
+  ],
+  "required_evidence": [
+    "schema-validation"
+  ]
+}

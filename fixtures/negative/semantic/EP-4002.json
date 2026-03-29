@@ -1,0 +1,22 @@
+{
+  "id": "EP-4002",
+  "kind": "execution_plan",
+  "change_request": "CR-1001",
+  "status": "planned",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "Describe the work"
+    },
+    {
+      "id": "TASK-002",
+      "title": "Validate the work"
+    }
+  ],
+  "dependencies": [
+    "TASK-002 depends_on TASK-999"
+  ],
+  "validation_plan": [
+    "Semantic validation rejects dependency edges that reference missing tasks"
+  ]
+}

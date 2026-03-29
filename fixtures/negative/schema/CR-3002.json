@@ -1,0 +1,19 @@
+{
+  "id": "CR-30A2",
+  "kind": "change_request",
+  "title": "Negative Change Request fixture with an invalid identifier",
+  "status": "draft",
+  "type": "feature",
+  "risk": "low",
+  "problem_statement": "Negative fixtures should cover bad identifier patterns.",
+  "desired_end_state": "Schema validation rejects identifiers outside the frozen CR-#### pattern.",
+  "acceptance_criteria": [
+    "Schema validation fails for the invalid id"
+  ],
+  "constraints": [
+    "Keep the failure focused on the id field"
+  ],
+  "required_evidence": [
+    "schema-validation"
+  ]
+}
