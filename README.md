@@ -1,52 +1,148 @@
-# CCP Core
+# ccp-core
 
-Open specification and reference toolkit for the **Change Contract Protocol (CCP)**.
+CCP is a standard way to describe a change, turn it into work, and record the result.
 
-CCP is the open protocol/workflow/object-format for **human-governed, agent-executed software change**.
+This repo contains the open core of CCP:
+- the spec
+- schemas
+- examples
+- a thin CLI
+- scaffolding for CCP-governed projects
 
-This repo intentionally contains two things together:
+## The simple idea
 
-1. **`ccp-spec`** — the normative spec, schemas, examples, and consultation draft
-2. **`ccp-cli`** — a thin reference toolkit for creating, validating, indexing, and rendering CCP objects locally
+Software teams have traditionally used pull requests as the main review object.
 
-## Mental model
+That made sense when humans were doing most of the implementation.
 
-- **CCP** is to **Foundry** roughly as **Git** is to **GitHub**
-- or as **OCI** is to **Docker**
+In agent-heavy projects, that starts to break down.
 
-Foundry is expected to be a strong product implementation of CCP, but CCP must still make sense:
+A PR is mostly about a patch:
+- here is the code I changed
+- please merge it
+
+CCP is about the change itself:
+- here is what we want to change
+- here is what must not break
+- here is what "done" looks like
+- here is how we will check
+
+So the shift is:
+
+- **PR** = review the patch
+- **CR** = review the change
+
+## The main object: Change Request
+
+The core CCP object is the **Change Request (CR)**.
+
+A CR is the approved description of a change.
+
+It answers five questions:
+
+1. What are we changing?
+2. Why are we changing it?
+3. What must not break?
+4. What does done look like?
+5. How will we check?
+
+That is the object humans should review before agents go implement.
+
+## The four core objects
+
+### Change Request
+The approved change brief.
+
+### Decision Record
+The "why note" for important decisions.
+
+### Execution Plan
+The work plan derived from the approved change.
+
+### Evidence Pack
+The results pack showing the change actually met the agreed checks.
+
+## The mental model
+
+The easiest way to understand CCP is:
+
+- **Git tracks source history**
+- **CCP tracks change history**
+
+Git tells you how the code changed.
+
+CCP tells you what change was intended, what had to stay true, and how the result was checked.
+
+## What this repo is for
+
+This repo is for defining CCP itself as an open, portable, local-first standard.
+
+CCP should work:
 - as plain files in git
-- in a fully local workflow
-- with no Foundry service running
-- with some future implementation besides Foundry
+- on a local machine
+- without a hosted control plane
+- with different products or tools built on top of it
 
-## Repo layout
+This repo is **not** the rich end-user product layer.
 
-- `PRD.md` — build brief for this repo
-- `AGENTS.md` — instructions for coding/design agents
-- `docs/` — normative spec, consultation draft, architecture, and repo notes
-- `protocol/` — protocol version metadata and document pointers
-- `schemas/` — JSON schemas for CCP core objects
-- `examples/` — example CCP objects
-- `templates/` — local control-plane repo templates
-- `src/ccp_cli/` — reference CLI
-- `tests/` — conformance and CLI tests
-- `control/` — this repo dogfooding CCP for its own evolution
+That comes later.
 
-## Key Documents
+## Relationship to Foundry
 
-- [Normative spec](docs/CCP_NORMATIVE_SPEC_V0.1.md) — binding v0.1 object, lifecycle, repo-contract, and interoperability rules
-- [Consultation draft](docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md) — explanatory background and non-normative consultation material
-- [Architecture note](docs/ARCHITECTURE.md) — control-plane, execution-plane, and worker model overview
-- [Foundry boundary note](docs/FOUNDRY_BOUNDARY.md) — protocol versus product split
-- [Protocol metadata](protocol/version.json) — machine-readable version and document map
+Foundry is intended to be a richer implementation built on top of CCP.
 
-## Immediate goal
+A useful mental model is:
 
-Ship a public **v0.1 consultation draft**, a clear normative spec, and a usable local CLI that can:
-- initialize a CCP control-plane repo
-- create new CCP objects
-- validate them against schemas
-- render concise summaries
-- index a control-plane repo
-- apply simple lifecycle transitions safely
+- **CCP** is like Git or OCI
+- **Foundry** is like GitHub or Docker Desktop
+
+CCP defines the portable format and workflow.
+
+Foundry can implement that format and add UX, indexing, approvals, integrations, orchestration, and worker support.
+
+## Repo contents
+
+Typical contents in this repo include:
+- spec drafts
+- terminology and semantics
+- object schemas
+- examples and fixtures
+- conformance material
+- CLI scaffolding
+- project templates
+
+## Language used in this repo
+
+We try to explain CCP in plain engineering language.
+
+Instead of leaning too hard on abstract words, we prefer:
+
+- what changes
+- what stays true
+- what done looks like
+- how we check
+- why this is the right change
+
+Those five ideas are the practical core of CCP.
+
+## Status
+
+Early and for consultation.
+
+The goal of this repo is to make the idea concrete enough to test, critique, and improve in the open.
+
+## Getting started
+
+At a high level, CCP use should feel like this:
+
+```bash
+ccp init
+ccp new change-request
+ccp validate
+```
+
+Exact CLI behavior will evolve, but the principle stays the same: describe the change first, then turn it into work, then record the result.
+
+## One-sentence summary
+
+**CCP is the standard way to write down a change before agents implement it, and to record the result afterward.**

@@ -1,77 +1,140 @@
-# AGENTS.md — CCP Core
+# AGENTS.md
 
-You are working in the **CCP Core** repo.
+## What this repo is doing
 
-Your mission is to make CCP real as an **open spec + thin reference toolkit**, without accidentally turning this repo into Foundry.
+This repo uses CCP.
 
-## North star
+That means we do **not** treat code diffs as the main review primitive. Instead, we treat a **Change Request (CR)** as the main review object.
 
-Humans review **intent, constraints, and evidence**.  
-Agents execute implementation.
+In plain English:
 
-CCP defines the interoperable objects and workflow semantics that make that possible.
+- a PR says **here is the code I changed**
+- a CR says **here is the change we want**
 
-## What this repo owns
+A CR is the approved change brief for the work.
 
-This repo owns:
-- the public consultation draft
-- the normative CCP core spec
-- schemas
-- examples and golden fixtures
-- conformance rules
-- a small local CLI
+It says:
+- what should change
+- why it should change
+- what must not break
+- what "done" looks like
+- how we will check the result
 
-This repo does **not** own:
-- rich product UX
-- hosted control planes
-- proprietary permissions/admin models
-- full worker orchestration productization
-- GitHub/Beads/Dolt-specific product behavior beyond examples and optional profiles
+If you are an agent working in this repo, that is the key thing to understand.
 
-Those belong in **Foundry** or other implementations.
+## When to open a Change Request
 
-## Read these first
+Open a CR before implementation when one or more of these is true:
 
-1. `PRD.md`
-2. `docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/FOUNDRY_BOUNDARY.md`
-5. `TASKS.md`
+- the team needs agreement on **what should change**
+- the change could affect behavior, interfaces, schemas, workflows, or user expectations
+- there are important rules that must stay true
+- "done" is not obvious from the code alone
+- the change is risky, broad, or likely to create debate
+- the work needs a preserved written rationale
 
-## Immediate priorities
+Do **not** skip a CR just because the code looks easy.
 
-1. Stabilize the core object model
-2. Keep lifecycle semantics crisp and minimal
-3. Make the CLI genuinely usable in a local repo
-4. Add examples and fixtures before adding complexity
-5. Keep implementation-specific details out of the spec
+Easy implementation can still hide an important change.
 
-## Rules
+## When a quick fix may not need a new CR
 
-- Prefer **portable, boring, explicit** design
-- Prefer JSON schemas and examples over prose-only rules
-- If a decision is Foundry-specific, move it out of CCP
-- Do not make hosted services mandatory
-- Keep the CLI thin and scriptable
-- Use the `control/` directory to dogfood CCP changes for this repo itself
+A tiny fix may not need a new CR when **all** of the following are true:
 
-## Agent workflow in this repo
+- it is clearly within the scope of an already approved CR, and
+- it does not change the accepted outcome of that CR, and
+- it does not add new risk or new "must not break" rules
 
-When making a nontrivial protocol change:
+If you are unsure, open the CR.
 
-1. Open or update a Change Request under `control/change-requests/`
-2. Add or update a Decision Record if the protocol choice is materially architectural
-3. Update schemas/examples/tests together
-4. Run CLI validation across the repo
-5. Update the consultation draft or normative spec if semantics changed
+## What to put in a Change Request
 
-## Definition of done
+Write the CR in plain engineering language.
 
-A CCP core change is done when:
-- the object semantics are clearly documented
-- schemas/examples/tests agree
-- the CLI can operate on the changed object model
-- the change can be understood without Foundry-specific context
+Focus on five questions:
+
+1. What are we changing?
+2. Why are we changing it?
+3. What must not break?
+4. What does done look like?
+5. How will we check?
+
+A good CR should make the intended change obvious without requiring a reviewer to inspect implementation details.
+
+### Good phrasing
+Use language like:
+- what changes
+- what stays true
+- done checks
+- expected behavior
+- before / after behavior
+- affected parts of the system
+- rollout or migration needs
+- remaining risks
+
+### Avoid
+Avoid vague process-heavy wording when simple wording will do.
+
+Prefer:
+- "what must not break"
+
+over:
+- "invariants and constraints" unless you truly need that precision
+
+Prefer:
+- "how we will check"
+
+over:
+- "required evidence obligations"
+
+## How to think about the other CCP objects
+
+### Decision Record
+This is the "why note".
+
+Use it when the reasoning behind the change matters and should be preserved for later.
+
+### Execution Plan
+This is the work plan.
+
+Usually this is generated from an approved CR. It breaks the change into executable work items.
+
+### Evidence Pack
+This is the results pack.
+
+It should show that the approved checks were satisfied. Use before/after examples, tests, validations, migration outputs, benchmarks, or other concrete proof.
+
+## Working style for agents
+
+When you are preparing a CR or updating CCP objects:
+
+- write plainly
+- be concrete
+- prefer examples over abstraction
+- say what changes and what stays true
+- make "done" testable
+- avoid implementation detail unless it affects the shape of the change
+- keep rationale short and high-signal
+- link related objects cleanly
+
+## Working style for implementation
+
+Once a CR is approved:
+
+- use the approved change brief as the source of truth
+- generate or update the Execution Plan
+- implement against the approved change
+- produce an Evidence Pack that clearly maps back to the CR checks
+- if implementation reveals that the approved change brief is wrong or incomplete, do **not** quietly improvise — update or amend the CR
+
+## The simplest mental model
+
+Remember:
+
+- **Git tracks how the code changed**
+- **CCP tracks what change we meant to make and how we checked it**
+
+If you keep that in mind, you will usually make the right call.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker

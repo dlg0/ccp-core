@@ -2,95 +2,132 @@
 ## Public Consultation Draft v0.1
 
 **Status:** For consultation  
-**Intended role:** Open protocol, workflow, and object-format for human-governed, agent-executed software change  
-**Reference implementation:** Foundry  
-**Working principle:** Humans review intent, constraints, and evidence. Agents execute implementation.
+**One-sentence summary:** CCP is a standard way to describe a change, turn it into work, and record the result.
 
 ---
 
-## 1. Why CCP exists
+## 1. What CCP is
 
-Traditional pull requests collapse several distinct jobs into one artifact:
+CCP is a standard way to describe a change **before** agents implement it, and to record the result **afterward**.
 
-- deciding whether a change should happen
-- deciding what the intended outcome is
-- reviewing implementation mechanics
-- deciding whether it is safe to ship
+Git tells you **how the code changed**.
 
-That worked tolerably when humans both authored and reviewed code. It degrades when implementation is largely agent-produced and agent-reviewed. In that world, PR diffs become a poor human collaboration primitive because they are downstream, noisy, and implementation-biased.
+CCP tells you **what change was wanted, what had to stay true, and how the result was checked**.
 
-CCP exists to move human review to the level where humans add the most value:
+That is the whole idea.
 
-- **admission:** should this change enter the stack at all?
-- **change contract:** what must be true when it is done?
-- **design intent:** what shape of solution is acceptable?
-- **risk posture:** what needs extra scrutiny or rollout control?
-- **evidence review:** did the delivered outcome satisfy the approved contract?
+CCP is for projects where humans are no longer spending most of their time reviewing code diffs. Instead, humans review the **change itself** at the right level:
 
-CCP is therefore a protocol for **human-governed, agent-executed change management**.
+- what should change
+- why it should change
+- what must not break
+- what "done" looks like
+- how we will check the result
 
----
-
-## 2. What CCP is and is not
-
-### CCP is
-- an **open object model** for change requests, decision records, execution plans, and evidence packs
-- a **workflow semantic model** describing state transitions and review responsibilities
-- a **storage- and transport-neutral protocol** that can be implemented locally, self-hosted, or in a hosted product
-- a **local-first collaboration pattern** that works with git-like source histories and distributed execution workers
-
-### CCP is not
-- a replacement for Git
-- a source-code hosting platform
-- a specific queueing engine, scheduler, or cloud service
-- a mandatory UI
-- a mandatory central database
-
-Foundry is expected to implement CCP, but CCP must remain usable without Foundry.
+CCP gives that process a shared format and workflow so humans, agents, and tools can all work from the same description.
 
 ---
 
-## 3. Design goals
+## 2. The main object: the Change Request
 
-1. **Human review should happen above implementation diffs.**
-2. **Local-first operation should be possible with no mandatory SaaS dependency.**
-3. **The protocol should compose with Git repositories, Dolt/Beads task systems, and heterogeneous worker runtimes.**
-4. **The durable record should preserve the “why”, not just the “what changed”.**
-5. **Execution should be distributable across local agents, hosted agents, and mixed environments.**
-6. **The protocol should support both small bug fixes and major architectural changes.**
-7. **Implementations should be able to add features without fragmenting the core object model.**
+The main object in CCP is a **Change Request (CR)**.
+
+A Change Request is the approved description of a change.
+
+In plain English, a CR says:
+
+1. What are we changing?
+2. Why are we changing it?
+3. What must not break?
+4. What does done look like?
+5. How will we check?
+
+That is the review surface.
+
+A pull request is mainly about a **patch**.
+
+A Change Request is about the **change we actually want**.
 
 ---
 
-## 4. Non-goals
+## 3. A plain-language view of the CCP objects
 
-- Standardizing source control operations
-- Standardizing model/provider APIs for coding agents
-- Standardizing every possible evidence artifact format
-- Standardizing a UI or permissions model beyond minimum interoperability needs
-- Requiring branches or prohibiting merge-to-main workflows
+CCP uses four core objects.
+
+### 3.1 Change Request
+The approved change brief.
+
+This is where the team agrees on:
+- what change is wanted
+- what must stay true
+- what success looks like
+- what checks or proof will be required
+
+### 3.2 Decision Record
+The "why note".
+
+Only needed when the reasoning matters enough to preserve. This records why a direction was chosen, what alternatives were considered, and what tradeoffs were accepted.
+
+### 3.3 Execution Plan
+The work plan.
+
+Usually agent-generated. This turns an approved Change Request into executable work items, dependencies, validation steps, and likely affected areas.
+
+### 3.4 Evidence Pack
+The results pack.
+
+Usually agent-generated after implementation. This contains the proof that the change met the agreed checks: tests, before/after examples, migration results, benchmarks, compatibility checks, and any remaining risks.
 
 ---
 
-## 5. Core concepts
+## 4. The simple mental model
 
-### 5.1 Change Request
-The primary human-reviewed object. A Change Request describes the problem, the intended end state, constraints, risks, and the evidence needed to accept the work.
+Use this mental model when reading the rest of the spec:
 
-### 5.2 Decision Record
-A durable record of an architecturally or operationally significant decision, including context, alternatives, decision, and consequences.
+- **Git** tracks source history
+- **CCP** tracks change history
 
-### 5.3 Execution Plan
-A machine-oriented decomposition of an approved Change Request into epics, tasks, dependencies, validation steps, and rollout steps. Usually agent-generated.
+More precisely:
 
-### 5.4 Evidence Pack
-A structured artifact containing the proof that a completed change satisfied the approved contract: tests, before/after outputs, validation summaries, migration results, benchmark deltas, and unresolved risks.
+- Git answers: **what changed in the code?**
+- CCP answers: **what change was intended, what had to stay true, and how was it checked?**
 
-### 5.5 Worker
-A process, agent, or human-operated runtime that discovers eligible work, claims it, executes it, validates it, and publishes progress and evidence.
+---
 
-### 5.6 Pull-based worker model
-Workers discover work from shared state and claim it themselves. A central scheduler is optional, not required. Claiming should use leases or equivalent claim semantics so work can be resumed if a worker dies.
+## 5. What CCP does and does not standardize
+
+CCP **does** standardize:
+- the shape of a Change Request
+- the shape of related decision, planning, and results objects
+- how those objects link together
+- a shared status model
+- basic project layout conventions
+- validation rules and conformance expectations
+
+CCP does **not** try to standardize:
+- how your codebase is structured
+- how your task system works internally
+- which agent runtime you use
+- which git host you use
+- which UI or product you use to interact with CCP
+
+CCP is meant to be portable and local-first. A project should be able to use CCP with plain files in git, with or without a larger product wrapped around it.
+
+### A note on language
+
+Some of the formal concepts underneath CCP can be described in heavier words such as "constraints", "invariants", "governance", or "contract".
+
+Those concepts are real, but they are not the best day-to-day language.
+
+This spec will prefer plain engineering language wherever possible:
+
+- **what changes**
+- **what must not break**
+- **what done looks like**
+- **how we check**
+- **why this is the right change**
+
+If you keep those five ideas in your head, the rest of CCP should feel straightforward.
 
 ---
 
