@@ -1,34 +1,39 @@
 {
   "id": "CR-0001",
   "kind": "change_request",
-  "title": "Publish CCP v0.1 consultation draft and working CLI",
-  "status": "approved",
+  "title": "Deliver the CCP Core v0.1 portable baseline",
+  "status": "verified",
   "type": "feature",
   "risk": "medium",
   "sponsor": "david",
   "owner": "ccp-core",
-  "problem_statement": "CCP needs an executable core so the protocol is testable and locally usable.",
-  "desired_end_state": "The repo contains a consultation draft, schemas, examples, and a working CLI for local CCP workflows.",
+  "problem_statement": "CCP needs one portable, implementation-neutral v0.1 baseline that other teams can read, validate, and run locally without depending on Foundry or any hosted control plane.",
+  "desired_end_state": "This repo publishes the v0.1 normative spec, schemas, examples, fixtures, templates, and thin reference CLI, and it dogfoods that baseline through a linked control-plane chain for the repo itself.",
   "acceptance_criteria": [
-    "Schemas exist for all four core object types",
-    "CLI can init, new, validate, render, and index a CCP repo",
-    "Examples validate against schemas"
+    "The repo publishes the CCP v0.1 normative spec plus supporting consultation, architecture, and boundary documents for the portable core",
+    "Schemas, examples, fixtures, templates, and the reference CLI all exercise the frozen v0.1 object model and pass repo regression checks",
+    "The repo dogfoods CCP with a linked control-plane chain for the v0.1 baseline, with evidence recorded against that same change"
   ],
   "non_goals": [
-    "Hosted workflow UI",
-    "Full product implementation"
+    "Turn the core repo into the Foundry product",
+    "Require hosted workflow infrastructure or product-specific review behavior"
   ],
   "constraints": [
-    "Do not make Foundry-specific behavior normative",
-    "Keep local-first operation intact"
+    "Keep the portable baseline local-first and implementation-neutral",
+    "Do not make Foundry-specific UX, approvals, or orchestration semantics normative"
   ],
   "required_evidence": [
-    "schema-validation",
-    "cli-demo",
-    "fixture-tests"
+    "spec-and-doc-alignment",
+    "schema-and-fixture-validation",
+    "cli-regression-tests",
+    "dogfood-control-plane-validation"
   ],
   "linked_decision_records": [
-    "DR-0001"
+    "DR-0001",
+    "DR-0002",
+    "DR-0003",
+    "DR-0004",
+    "DR-0005"
   ],
   "linked_execution_plans": [
     "EP-0001"

@@ -2,33 +2,52 @@
   "id": "EV-0001",
   "kind": "evidence_pack",
   "change_request": "CR-0001",
-  "status": "submitted",
+  "status": "accepted",
   "acceptance_checklist": [
     {
-      "criterion": "Schemas exist for all four core object types",
+      "criterion": "The repo publishes the CCP v0.1 normative spec plus supporting consultation, architecture, and boundary documents for the portable core",
       "result": "pass"
     },
     {
-      "criterion": "CLI can init, new, validate, render, and index a CCP repo",
-      "result": "partial"
+      "criterion": "Schemas, examples, fixtures, templates, and the reference CLI all exercise the frozen v0.1 object model and pass repo regression checks",
+      "result": "pass"
     },
     {
-      "criterion": "Examples validate against schemas",
+      "criterion": "The repo dogfoods CCP with a linked control-plane chain for the v0.1 baseline, with evidence recorded against that same change",
       "result": "pass"
     }
   ],
   "artifacts": [
     {
+      "path": "docs/CCP_NORMATIVE_SPEC_V0.1.md"
+    },
+    {
+      "path": "docs/consultation/CCP_PUBLIC_CONSULTATION_DRAFT.md"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md"
+    },
+    {
+      "path": "docs/FOUNDRY_BOUNDARY.md"
+    },
+    {
       "path": "schemas/"
+    },
+    {
+      "path": "examples/"
+    },
+    {
+      "path": "fixtures/"
+    },
+    {
+      "path": "src/ccp_cli/main.py"
     },
     {
       "path": "tests/"
     },
     {
-      "path": "README.md"
+      "path": "control/"
     }
   ],
-  "unresolved_risks": [
-    "CLI transition behavior not fully implemented yet"
-  ]
+  "unresolved_risks": []
 }

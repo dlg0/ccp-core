@@ -2,30 +2,37 @@
   "id": "EP-0001",
   "kind": "execution_plan",
   "change_request": "CR-0001",
-  "status": "planned",
+  "status": "done",
   "tasks": [
     {
       "id": "TASK-001",
-      "title": "Write schemas"
+      "title": "Publish the v0.1 normative spec and supporting core documents"
     },
     {
       "id": "TASK-002",
-      "title": "Implement CLI validate/init/new"
+      "title": "Freeze the schemas, examples, fixtures, and templates to the portable v0.1 contract"
     },
     {
       "id": "TASK-003",
-      "title": "Add fixtures and tests"
+      "title": "Finish the thin reference CLI and its regression coverage"
+    },
+    {
+      "id": "TASK-004",
+      "title": "Record the repo's own dogfood control-plane evidence for the v0.1 baseline"
     }
   ],
   "dependencies": [
-    "TASK-003 depends_on TASK-001",
-    "TASK-003 depends_on TASK-002"
+    "TASK-002 depends_on TASK-001",
+    "TASK-003 depends_on TASK-002",
+    "TASK-004 depends_on TASK-001",
+    "TASK-004 depends_on TASK-003"
   ],
   "validation_plan": [
-    "Validate all examples",
-    "Run CLI smoke tests"
+    "Run pytest for schema, fixture, CLI contract, transition, and dogfood control-plane regression coverage",
+    "Validate the examples, positive fixtures, and control-plane objects against the frozen schemas"
   ],
   "rollout_plan": [
-    "Tag v0.1.0-alpha when tests pass"
+    "Keep main as the dogfood source of truth for the CCP Core v0.1 baseline",
+    "Tag the first public prerelease once remaining follow-up control-plane files land"
   ]
 }
