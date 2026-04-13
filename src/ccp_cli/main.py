@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Dict, List
 
 import typer
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 from rich.console import Console
 from rich.table import Table
 
@@ -106,11 +108,17 @@ DIR_MAP = {
     "evidence_pack": "control/evidence-packs",
 }
 
+REQUIRED_PROPERTY_RE = re.compile(r"'([^']+)' is a required property")
+KIND_BY_DIR = {directory: kind for kind, directory in DIR_MAP.items()}
+
+
 def repo_root(path: Path) -> Path:
     return path.resolve()
 
+
 def schema_root(root: Path) -> Path:
     return root / "schemas"
+
 
 def iter_ccp_files(root: Path):
     for rel in DIR_MAP.values():
@@ -119,11 +127,60 @@ def iter_ccp_files(root: Path):
             continue
         yield from sorted(d.glob("*.json"))
 
+
 def load_json(path: Path):
     return json.loads(path.read_text())
 
+
 def load_schema(root: Path, kind: str):
     return json.loads((schema_root(root) / SCHEMA_MAP[kind]).read_text())
+
+
+def schema_kind_for_file(root: Path, path: Path, data: dict) -> str:
+    kind = data.get("kind")
+    if kind in SCHEMA_MAP:
+        return kind
+
+    rel_parent = path.relative_to(root).parent.as_posix()
+    if rel_parent in KIND_BY_DIR:
+        return KIND_BY_DIR[rel_parent]
+
+    raise KeyError(kind or "missing kind")
+
+
+def validation_path(error: ValidationError) -> list[str | int]:
+    path = list(error.path)
+    if error.validator == "required":
+        match = REQUIRED_PROPERTY_RE.search(error.message)
+        if match:
+            path.append(match.group(1))
+    return path
+
+
+def json_pointer(path: list[str | int]) -> str:
+    if not path:
+        return "/"
+    escaped = [
+        str(segment).replace("~", "~0").replace("/", "~1")
+        for segment in path
+    ]
+    return "/" + "/".join(escaped)
+
+
+def sorted_validation_errors(validator: Draft202012Validator, data: dict) -> list[ValidationError]:
+    return sorted(
+        validator.iter_errors(data),
+        key=lambda error: (
+            json_pointer(validation_path(error)),
+            list(error.schema_path),
+            error.message,
+        ),
+    )
+
+
+def print_schema_failure(root: Path, path: Path, pointer: str, reason: str) -> None:
+    console.print(f"[red]FAIL[/red] {path.relative_to(root)} :: {pointer} :: {reason}")
+
 
 @app.command()
 def init(path: Path = typer.Argument(Path("."), help="Repo path")):
@@ -165,12 +222,18 @@ def validate(path: Path = typer.Argument(Path("."), help="Repo path")):
     for f in files:
         try:
             data = load_json(f)
-            schema = load_schema(root, data["kind"])
-            Draft202012Validator(schema).validate(data)
+            schema = load_schema(root, schema_kind_for_file(root, f, data))
+            validator = Draft202012Validator(schema)
+            errors = sorted_validation_errors(validator, data)
+            if errors:
+                failures += 1
+                for error in errors:
+                    print_schema_failure(root, f, json_pointer(validation_path(error)), error.message)
+                continue
             console.print(f"[green]OK[/green] {f.relative_to(root)}")
         except Exception as exc:
             failures += 1
-            console.print(f"[red]FAIL[/red] {f.relative_to(root)} :: {exc}")
+            print_schema_failure(root, f, "/", str(exc))
     if failures:
         raise typer.Exit(1)
 
