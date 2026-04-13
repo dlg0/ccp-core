@@ -14,4 +14,9 @@ Use these directories:
 - `execution-plans/`
 - `evidence-packs/`
 
+Repo-local control-plane notes live alongside the dogfood chain:
+- `protocol/version.json` pins the CCP version metadata and points to repo-local notes
+- `profiles.md` records the active conformance profile notes for this repo
+- `policy/` holds the minimal review and evidence policy placeholders for local use
+
 The goal is not process theater. Keep records concise, structured, and linked.

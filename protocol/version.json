@@ -12,6 +12,13 @@
     "execution_plan": "schemas/execution-plan.schema.json",
     "evidence_pack": "schemas/evidence-pack.schema.json"
   },
+  "repo_local_notes": {
+    "profiles": "profiles.md",
+    "policy": {
+      "review": "policy/review.md",
+      "evidence": "policy/evidence.md"
+    }
+  },
   "portable_control_plane": {
     "serialized_form": "json",
     "layout": "one file per core object under a control-plane root",
