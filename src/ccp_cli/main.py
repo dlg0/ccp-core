@@ -44,12 +44,14 @@ TRANSITIONS_BY_KIND = {
     },
 }
 
-ROOT_DIRS = [
-    "control/change-requests",
-    "control/decision-records",
-    "control/execution-plans",
-    "control/evidence-packs",
-]
+DIR_NAME_BY_KIND = {
+    "change_request": "change-requests",
+    "decision_record": "decision-records",
+    "execution_plan": "execution-plans",
+    "evidence_pack": "evidence-packs",
+}
+
+ROOT_DIRS = [f"control/{directory}" for directory in DIR_NAME_BY_KIND.values()]
 
 SCHEMA_MAP = {
     "change_request": "change-request.schema.json",
@@ -101,31 +103,71 @@ TEMPLATES = {
     },
 }
 
-DIR_MAP = {
-    "change_request": "control/change-requests",
-    "decision_record": "control/decision-records",
-    "execution_plan": "control/execution-plans",
-    "evidence_pack": "control/evidence-packs",
-}
+DIR_MAP = {kind: f"control/{directory}" for kind, directory in DIR_NAME_BY_KIND.items()}
 
 REQUIRED_PROPERTY_RE = re.compile(r"'([^']+)' is a required property")
-KIND_BY_DIR = {directory: kind for kind, directory in DIR_MAP.items()}
+KIND_BY_DIR = {directory: kind for kind, directory in DIR_NAME_BY_KIND.items()}
+KIND_BY_PREFIX = {
+    "CR": "change_request",
+    "DR": "decision_record",
+    "EP": "execution_plan",
+    "EV": "evidence_pack",
+}
 
 
 def repo_root(path: Path) -> Path:
     return path.resolve()
 
 
+def control_root(root: Path) -> Path:
+    embedded = root / "control"
+    if embedded.exists():
+        return embedded
+    if all((root / directory).exists() for directory in DIR_NAME_BY_KIND.values()):
+        return root
+    return embedded
+
+
 def schema_root(root: Path) -> Path:
     return root / "schemas"
 
 
+def object_dir(root: Path, kind: str) -> Path:
+    return control_root(root) / DIR_NAME_BY_KIND[kind]
+
+
+def object_dir_relative_to_repo(root: Path, kind: str) -> str:
+    return object_dir(root, kind).relative_to(root).as_posix()
+
+
+def directory_kind_for_file(root: Path, path: Path) -> str:
+    rel_parent = path.parent.relative_to(control_root(root)).as_posix()
+    return KIND_BY_DIR[rel_parent]
+
+
+def kind_for_filename(path: Path) -> str | None:
+    return KIND_BY_PREFIX.get(path.stem[:2])
+
+
 def iter_ccp_files(root: Path):
-    for rel in DIR_MAP.values():
-        d = root / rel
+    for kind in DIR_NAME_BY_KIND:
+        d = object_dir(root, kind)
         if not d.exists():
             continue
         yield from sorted(d.glob("*.json"))
+
+
+def iter_misplaced_ccp_files(root: Path):
+    base = control_root(root)
+    if not base.exists():
+        return
+
+    for path in sorted(base.rglob("*.json")):
+        rel = path.relative_to(base)
+        if rel.parent.as_posix() in KIND_BY_DIR:
+            continue
+        if kind_for_filename(path):
+            yield path
 
 
 def load_json(path: Path):
@@ -141,11 +183,7 @@ def schema_kind_for_file(root: Path, path: Path, data: dict) -> str:
     if kind in SCHEMA_MAP:
         return kind
 
-    rel_parent = path.relative_to(root).parent.as_posix()
-    if rel_parent in KIND_BY_DIR:
-        return KIND_BY_DIR[rel_parent]
-
-    raise KeyError(kind or "missing kind")
+    return directory_kind_for_file(root, path)
 
 
 def validation_path(error: ValidationError) -> list[str | int]:
@@ -179,7 +217,54 @@ def sorted_validation_errors(validator: Draft202012Validator, data: dict) -> lis
 
 
 def print_schema_failure(root: Path, path: Path, pointer: str, reason: str) -> None:
-    console.print(f"[red]FAIL[/red] {path.relative_to(root)} :: {pointer} :: {reason}")
+    console.print(
+        f"[red]FAIL[/red] {path.relative_to(root)} :: {pointer} :: {reason}",
+        soft_wrap=True,
+    )
+
+
+def repo_layout_failures(root: Path) -> list[tuple[Path, str, str]]:
+    failures = []
+    for kind in DIR_NAME_BY_KIND:
+        d = object_dir(root, kind)
+        if not d.is_dir():
+            failures.append((d, "/", f"missing required directory {d.relative_to(root)}"))
+
+    for path in iter_misplaced_ccp_files(root):
+        kind = kind_for_filename(path)
+        if kind is None:
+            continue
+        failures.append(
+            (
+                path,
+                "/",
+                f"expected {path.name} under {object_dir_relative_to_repo(root, kind)}",
+            )
+        )
+
+    return failures
+
+
+def file_layout_failures(root: Path, path: Path, data: dict) -> list[tuple[str, str]]:
+    failures = []
+    expected_kind = directory_kind_for_file(root, path)
+    actual_kind = data.get("kind")
+    if actual_kind in DIR_NAME_BY_KIND and actual_kind != expected_kind:
+        failures.append(
+            (
+                "/kind",
+                (
+                    f"expected kind '{expected_kind}' for files in "
+                    f"{path.parent.relative_to(root).as_posix()}, found '{actual_kind}'"
+                ),
+            )
+        )
+
+    object_id = data.get("id")
+    if isinstance(object_id, str) and path.name != f"{object_id}.json":
+        failures.append(("/id", f"expected filename {object_id}.json, found {path.name}"))
+
+    return failures
 
 
 @app.command()
@@ -214,19 +299,27 @@ def new_object(
 def validate(path: Path = typer.Argument(Path("."), help="Repo path")):
     root = repo_root(path)
     files = list(iter_ccp_files(root))
-    if not files:
+    failures = 0
+
+    for layout_path, pointer, reason in repo_layout_failures(root):
+        failures += 1
+        print_schema_failure(root, layout_path, pointer, reason)
+
+    if not files and not failures:
         console.print("[yellow]No CCP JSON files found.[/yellow]")
         raise typer.Exit(0)
 
-    failures = 0
     for f in files:
         try:
             data = load_json(f)
+            layout_errors = file_layout_failures(root, f, data)
             schema = load_schema(root, schema_kind_for_file(root, f, data))
             validator = Draft202012Validator(schema)
             errors = sorted_validation_errors(validator, data)
-            if errors:
+            if errors or layout_errors:
                 failures += 1
+                for pointer, reason in layout_errors:
+                    print_schema_failure(root, f, pointer, reason)
                 for error in errors:
                     print_schema_failure(root, f, json_pointer(validation_path(error)), error.message)
                 continue

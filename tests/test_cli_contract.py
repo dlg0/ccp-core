@@ -105,6 +105,18 @@ def test_validate_reports_missing_required_field_with_pointer(tmp_path: Path):
     assert "'desired_end_state' is a required property" in result.stdout
 
 
+def test_validate_reports_missing_required_directories(tmp_path: Path):
+    shutil.copytree(ROOT / "schemas", tmp_path / "schemas")
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert "control/change-requests :: / :: missing required directory control/change-requests" in result.stdout
+    assert "control/decision-records :: / :: missing required directory control/decision-records" in result.stdout
+    assert "control/execution-plans :: / :: missing required directory control/execution-plans" in result.stdout
+    assert "control/evidence-packs :: / :: missing required directory control/evidence-packs" in result.stdout
+
+
 def test_validate_reports_all_schema_failures_for_a_file(tmp_path: Path):
     seed_repo(tmp_path)
 
@@ -129,3 +141,75 @@ def test_validate_reports_all_schema_failures_for_a_file(tmp_path: Path):
     assert "control/change-requests/CR-9002.json :: /acceptance_criteria/0 ::" in result.stdout
     assert "control/change-requests/CR-9002.json :: /desired_end_state ::" in result.stdout
     assert "control/change-requests/CR-9002.json :: /id ::" in result.stdout
+
+
+def test_validate_reports_kind_directory_mismatch(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    wrong_dir_object = {
+        "id": "CR-9003",
+        "kind": "change_request",
+        "title": "Wrong directory fixture",
+        "status": "draft",
+        "type": "feature",
+        "risk": "low",
+        "problem_statement": "Validate kind and directory consistency.",
+        "desired_end_state": "The validator flags files in the wrong directory.",
+        "acceptance_criteria": ["Report the kind mismatch against the directory."],
+        "constraints": ["Keep the object otherwise schema-valid."],
+        "required_evidence": ["cli-output"],
+    }
+    target = tmp_path / "control" / "decision-records" / "CR-9003.json"
+    target.write_text(json.dumps(wrong_dir_object, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/decision-records/CR-9003.json :: /kind :: "
+        "expected kind 'decision_record' for files in control/decision-records, found 'change_request'"
+    ) in result.stdout
+
+
+def test_validate_reports_filename_id_mismatch(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    valid_cr = {
+        "id": "CR-9004",
+        "kind": "change_request",
+        "title": "Filename mismatch fixture",
+        "status": "draft",
+        "type": "feature",
+        "risk": "low",
+        "problem_statement": "Validate filename to object ID consistency.",
+        "desired_end_state": "The validator rejects mismatched filenames.",
+        "acceptance_criteria": ["Report the expected filename from the ID."],
+        "constraints": ["Keep the object otherwise schema-valid."],
+        "required_evidence": ["cli-output"],
+    }
+    target = tmp_path / "control" / "change-requests" / "CR-9999.json"
+    target.write_text(json.dumps(valid_cr, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/change-requests/CR-9999.json :: /id :: "
+        "expected filename CR-9004.json, found CR-9999.json"
+    ) in result.stdout
+
+
+def test_validate_reports_object_file_outside_canonical_directory(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    archive_dir = tmp_path / "control" / "archive"
+    archive_dir.mkdir()
+    (archive_dir / "CR-9005.json").write_text("{}")
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/archive/CR-9005.json :: / :: "
+        "expected CR-9005.json under control/change-requests"
+    ) in result.stdout
