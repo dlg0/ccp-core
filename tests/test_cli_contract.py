@@ -213,3 +213,132 @@ def test_validate_reports_object_file_outside_canonical_directory(tmp_path: Path
         "control/archive/CR-9005.json :: / :: "
         "expected CR-9005.json under control/change-requests"
     ) in result.stdout
+
+
+def test_validate_reports_missing_linked_decision_record(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    invalid_cr = {
+        "id": "CR-9006",
+        "kind": "change_request",
+        "title": "Broken linked decision record fixture",
+        "status": "approved",
+        "type": "feature",
+        "risk": "low",
+        "problem_statement": "Cross-object validation should catch missing linked Decision Records.",
+        "desired_end_state": "The validator reports unresolved linked Decision Record identifiers.",
+        "acceptance_criteria": ["Report the missing Decision Record ID."],
+        "constraints": ["Keep the object schema-valid."],
+        "required_evidence": ["cli-output"],
+        "linked_decision_records": ["DR-9999"],
+    }
+    target = tmp_path / "control" / "change-requests" / "CR-9006.json"
+    target.write_text(json.dumps(invalid_cr, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/change-requests/CR-9006.json :: /linked_decision_records :: "
+        "CR-9006 links to missing Decision Record DR-9999"
+    ) in result.stdout
+
+
+def test_validate_reports_execution_plan_missing_change_request(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    invalid_ep = {
+        "id": "EP-9001",
+        "kind": "execution_plan",
+        "change_request": "CR-9999",
+        "status": "planned",
+        "tasks": [{"id": "TASK-001", "title": "Describe the work"}],
+        "validation_plan": ["Show missing Change Request validation output."],
+    }
+    target = tmp_path / "control" / "execution-plans" / "EP-9001.json"
+    target.write_text(json.dumps(invalid_ep, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/execution-plans/EP-9001.json :: /change_request :: "
+        "EP-9001 references missing Change Request CR-9999"
+    ) in result.stdout
+
+
+def test_validate_reports_execution_plan_not_listed_by_change_request(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    change_request = {
+        "id": "CR-9007",
+        "kind": "change_request",
+        "title": "Missing reciprocal execution plan link fixture",
+        "status": "planned",
+        "type": "feature",
+        "risk": "low",
+        "problem_statement": "Cross-object validation should catch one-sided CR to EP relationships.",
+        "desired_end_state": "Execution Plans must be listed by their governing Change Request.",
+        "acceptance_criteria": ["Report the missing reciprocal link."],
+        "constraints": ["Keep both objects schema-valid."],
+        "required_evidence": ["cli-output"],
+    }
+    execution_plan = {
+        "id": "EP-9002",
+        "kind": "execution_plan",
+        "change_request": "CR-9007",
+        "status": "planned",
+        "tasks": [{"id": "TASK-001", "title": "Describe the work"}],
+        "validation_plan": ["Show missing reciprocal link validation output."],
+    }
+    (tmp_path / "control" / "change-requests" / "CR-9007.json").write_text(json.dumps(change_request, indent=2))
+    (tmp_path / "control" / "execution-plans" / "EP-9002.json").write_text(json.dumps(execution_plan, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/execution-plans/EP-9002.json :: /change_request :: "
+        "EP-9002 references Change Request CR-9007, but CR-9007 does not list EP-9002 in linked_execution_plans"
+    ) in result.stdout
+
+
+def test_validate_reports_missing_execution_plan_task_dependency(tmp_path: Path):
+    seed_repo(tmp_path)
+
+    change_request = {
+        "id": "CR-9008",
+        "kind": "change_request",
+        "title": "Execution plan dependency fixture",
+        "status": "planned",
+        "type": "feature",
+        "risk": "low",
+        "problem_statement": "Cross-object validation should catch dependency edges to missing tasks.",
+        "desired_end_state": "Execution Plan dependencies must reference defined task IDs.",
+        "acceptance_criteria": ["Report the missing dependency target."],
+        "constraints": ["Keep the objects schema-valid."],
+        "required_evidence": ["cli-output"],
+        "linked_execution_plans": ["EP-9003"],
+    }
+    execution_plan = {
+        "id": "EP-9003",
+        "kind": "execution_plan",
+        "change_request": "CR-9008",
+        "status": "planned",
+        "tasks": [
+            {"id": "TASK-001", "title": "Describe the work"},
+            {"id": "TASK-002", "title": "Validate the work"},
+        ],
+        "dependencies": ["TASK-002 depends_on TASK-999"],
+        "validation_plan": ["Show missing task dependency validation output."],
+    }
+    (tmp_path / "control" / "change-requests" / "CR-9008.json").write_text(json.dumps(change_request, indent=2))
+    (tmp_path / "control" / "execution-plans" / "EP-9003.json").write_text(json.dumps(execution_plan, indent=2))
+
+    result = runner.invoke(app, ["validate", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert (
+        "control/execution-plans/EP-9003.json :: /dependencies/0 :: "
+        "EP-9003 dependency references missing task TASK-999"
+    ) in result.stdout

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
@@ -113,6 +114,14 @@ KIND_BY_PREFIX = {
     "EP": "execution_plan",
     "EV": "evidence_pack",
 }
+
+
+@dataclass(frozen=True)
+class LoadedObject:
+    path: Path
+    data: dict
+    layout_errors: list[tuple[str, str]]
+    schema_errors: list[ValidationError]
 
 
 def repo_root(path: Path) -> Path:
@@ -267,6 +276,207 @@ def file_layout_failures(root: Path, path: Path, data: dict) -> list[tuple[str, 
     return failures
 
 
+def record_for_kind(catalog: dict[str, list[LoadedObject]], object_id: str, kind: str) -> LoadedObject | None:
+    for record in catalog.get(object_id, []):
+        if record.data.get("kind") == kind:
+            return record
+    return None
+
+
+def semantic_failures_for_object(record: LoadedObject, catalog: dict[str, list[LoadedObject]]) -> list[tuple[str, str]]:
+    failures: list[tuple[str, str]] = []
+    data = record.data
+    kind = data.get("kind")
+    object_id = data.get("id")
+    if not isinstance(kind, str) or not isinstance(object_id, str):
+        return failures
+
+    if kind == "change_request":
+        for linked_id in data.get("linked_decision_records", []):
+            if record_for_kind(catalog, linked_id, "decision_record") is None:
+                failures.append(
+                    (
+                        "/linked_decision_records",
+                        f"{object_id} links to missing Decision Record {linked_id}",
+                    )
+                )
+        for linked_id in data.get("linked_execution_plans", []):
+            linked_record = record_for_kind(catalog, linked_id, "execution_plan")
+            if linked_record is None:
+                failures.append(
+                    (
+                        "/linked_execution_plans",
+                        f"{object_id} links to missing Execution Plan {linked_id}",
+                    )
+                )
+                continue
+            if linked_record.data.get("change_request") != object_id:
+                failures.append(
+                    (
+                        "/linked_execution_plans",
+                        f"{object_id} links to Execution Plan {linked_id}, but that plan references "
+                        f"Change Request {linked_record.data.get('change_request')!r}",
+                    )
+                )
+        for linked_id in data.get("linked_evidence_packs", []):
+            linked_record = record_for_kind(catalog, linked_id, "evidence_pack")
+            if linked_record is None:
+                failures.append(
+                    (
+                        "/linked_evidence_packs",
+                        f"{object_id} links to missing Evidence Pack {linked_id}",
+                    )
+                )
+                continue
+            if linked_record.data.get("change_request") != object_id:
+                failures.append(
+                    (
+                        "/linked_evidence_packs",
+                        f"{object_id} links to Evidence Pack {linked_id}, but that pack references "
+                        f"Change Request {linked_record.data.get('change_request')!r}",
+                    )
+                )
+                continue
+        return failures
+
+    if kind == "decision_record":
+        supersedes = data.get("supersedes")
+        if not isinstance(supersedes, str):
+            return failures
+        if supersedes == object_id:
+            failures.append(("/supersedes", f"{object_id} cannot supersede itself"))
+            return failures
+        if record_for_kind(catalog, supersedes, "decision_record") is None:
+            failures.append(
+                (
+                    "/supersedes",
+                    f"{object_id} supersedes missing Decision Record {supersedes}",
+                )
+            )
+        return failures
+
+    if kind == "execution_plan":
+        change_request_id = data.get("change_request")
+        if isinstance(change_request_id, str):
+            cr_record = record_for_kind(catalog, change_request_id, "change_request")
+            if cr_record is None:
+                failures.append(
+                    (
+                        "/change_request",
+                        f"{object_id} references missing Change Request {change_request_id}",
+                    )
+                )
+            elif object_id not in cr_record.data.get("linked_execution_plans", []):
+                failures.append(
+                    (
+                        "/change_request",
+                        f"{object_id} references Change Request {change_request_id}, but {change_request_id} "
+                        f"does not list {object_id} in linked_execution_plans",
+                    )
+                )
+
+        task_ids: list[str] = []
+        seen_task_ids: set[str] = set()
+        for index, task in enumerate(data.get("tasks", [])):
+            task_id = task.get("id")
+            if not isinstance(task_id, str):
+                continue
+            task_ids.append(task_id)
+            if task_id in seen_task_ids:
+                failures.append(
+                    (
+                        f"/tasks/{index}/id",
+                        f"{object_id} defines duplicate task id {task_id}",
+                    )
+                )
+            seen_task_ids.add(task_id)
+
+        task_id_set = set(task_ids)
+        for index, dependency in enumerate(data.get("dependencies", [])):
+            task_id, _, depends_on = dependency.partition(" depends_on ")
+            if task_id not in task_id_set:
+                failures.append(
+                    (
+                        f"/dependencies/{index}",
+                        f"{object_id} dependency starts from missing task {task_id}",
+                    )
+                )
+            if depends_on not in task_id_set:
+                failures.append(
+                    (
+                        f"/dependencies/{index}",
+                        f"{object_id} dependency references missing task {depends_on}",
+                    )
+                )
+            if task_id == depends_on:
+                failures.append(
+                    (
+                        f"/dependencies/{index}",
+                        f"{object_id} dependency cannot point a task to itself: {dependency}",
+                    )
+                )
+        return failures
+
+    if kind == "evidence_pack":
+        change_request_id = data.get("change_request")
+        if not isinstance(change_request_id, str):
+            return failures
+        cr_record = record_for_kind(catalog, change_request_id, "change_request")
+        if cr_record is None:
+            failures.append(
+                (
+                    "/change_request",
+                    f"{object_id} references missing Change Request {change_request_id}",
+                )
+            )
+            return failures
+        if object_id not in cr_record.data.get("linked_evidence_packs", []):
+            failures.append(
+                (
+                    "/change_request",
+                    f"{object_id} references Change Request {change_request_id}, but {change_request_id} "
+                    f"does not list {object_id} in linked_evidence_packs",
+                )
+            )
+
+    return failures
+
+
+def semantic_failures(records: list[LoadedObject]) -> list[tuple[Path, str, str]]:
+    failures: list[tuple[Path, str, str]] = []
+    catalog: dict[str, list[LoadedObject]] = {}
+
+    for record in records:
+        object_id = record.data.get("id")
+        if isinstance(object_id, str):
+            catalog.setdefault(object_id, []).append(record)
+
+    for object_id, object_records in catalog.items():
+        if len(object_records) < 2:
+            continue
+        other_paths = ", ".join(
+            sorted(other.path.name for other in object_records)
+        )
+        for record in object_records:
+            failures.append(
+                (
+                    record.path,
+                    "/id",
+                    f"duplicate object id {object_id} appears in multiple files: {other_paths}",
+                )
+            )
+
+    for record in records:
+        if record.layout_errors or record.schema_errors:
+            continue
+        failures.extend(
+            (record.path, pointer, reason)
+            for pointer, reason in semantic_failures_for_object(record, catalog)
+        )
+
+    return failures
+
+
 @app.command()
 def init(path: Path = typer.Argument(Path("."), help="Repo path")):
     root = repo_root(path)
@@ -300,6 +510,7 @@ def validate(path: Path = typer.Argument(Path("."), help="Repo path")):
     root = repo_root(path)
     files = list(iter_ccp_files(root))
     failures = 0
+    records: list[LoadedObject] = []
 
     for layout_path, pointer, reason in repo_layout_failures(root):
         failures += 1
@@ -316,6 +527,7 @@ def validate(path: Path = typer.Argument(Path("."), help="Repo path")):
             schema = load_schema(root, schema_kind_for_file(root, f, data))
             validator = Draft202012Validator(schema)
             errors = sorted_validation_errors(validator, data)
+            records.append(LoadedObject(path=f, data=data, layout_errors=layout_errors, schema_errors=errors))
             if errors or layout_errors:
                 failures += 1
                 for pointer, reason in layout_errors:
@@ -323,10 +535,28 @@ def validate(path: Path = typer.Argument(Path("."), help="Repo path")):
                 for error in errors:
                     print_schema_failure(root, f, json_pointer(validation_path(error)), error.message)
                 continue
-            console.print(f"[green]OK[/green] {f.relative_to(root)}")
         except Exception as exc:
             failures += 1
             print_schema_failure(root, f, "/", str(exc))
+
+    semantic_errors = semantic_failures(records)
+    semantic_errors_by_path = {
+        path: []
+        for path in [record.path for record in records]
+    }
+    for path, pointer, reason in semantic_errors:
+        semantic_errors_by_path.setdefault(path, []).append((pointer, reason))
+
+    for record in records:
+        if record.layout_errors or record.schema_errors:
+            continue
+        semantic_errors_for_path = semantic_errors_by_path.get(record.path, [])
+        if semantic_errors_for_path:
+            failures += 1
+            for pointer, reason in semantic_errors_for_path:
+                print_schema_failure(root, record.path, pointer, reason)
+            continue
+        console.print(f"[green]OK[/green] {record.path.relative_to(root)}")
     if failures:
         raise typer.Exit(1)
 
